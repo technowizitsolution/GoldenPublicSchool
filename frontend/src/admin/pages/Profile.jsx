@@ -105,20 +105,20 @@ const Profile = () => {
       {/* Profile Card */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8 overflow-hidden">
         {/* Cover Section */}
-        <div className="h-32 bg-gradient-to-r from-blue-600 to-blue-400"></div>
+        <div className="h-32 bg-[#C3EBFA]"></div>
 
         {/* Profile Header */}
         <div className="px-8 pb-8">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 -mt-16 relative z-10 mb-8">
             <div className="flex items-end gap-4">
               <div className="w-32 h-32 bg-white rounded-lg shadow-lg border-4 border-white flex items-center justify-center">
-                <User className="w-20 h-20 text-blue-600" />
+                <User className="w-20 h-20 text-[bg-[#C3EBFA]]" />
               </div>
               <div className="pb-2">
                 <h2 className="text-3xl font-bold text-gray-900">
                   {formData.firstName} {formData.lastName}
                 </h2>
-                <p className="text-blue-600 font-semibold">{formData.position}</p>
+                <p className="text-gray-400 font-semibold">{formData.position}</p>
                 <p className="text-gray-600 text-sm">{formData.department}</p>
               </div>
             </div>
@@ -128,7 +128,7 @@ const Profile = () => {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
                 isEditing
                   ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-[#C3EBFA] text-black hover:bg-[#a4e4fb]'
               }`}
             >
               {isEditing ? (
@@ -187,14 +187,14 @@ const Profile = () => {
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Email Address</label>
                     <p className="text-gray-900 font-medium mt-2 flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-blue-600" />
+                      <Mail className="w-4 h-4 text-black" />
                       {formData.email}
                     </p>
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Phone Number</label>
                     <p className="text-gray-900 font-medium mt-2 flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-blue-600" />
+                      <Phone className="w-4 h-4 text-black" />
                       {formData.phone}
                     </p>
                   </div>
@@ -217,7 +217,7 @@ const Profile = () => {
                     <div>
                       <label className="text-sm font-semibold text-gray-600">Street Address</label>
                       <p className="text-gray-900 font-medium mt-2 flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-blue-600" />
+                        <MapPin className="w-4 h-4 text-black" />
                         {formData.address}
                       </p>
                     </div>
@@ -242,7 +242,7 @@ const Profile = () => {
                   <div>
                     <label className="text-sm font-semibold text-gray-600">Join Date</label>
                     <p className="text-gray-900 font-medium mt-2 flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-blue-600" />
+                      <Calendar className="w-4 h-4 text-black" />
                       {new Date(formData.joinDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                   </div>
@@ -258,7 +258,7 @@ const Profile = () => {
                       name="firstName"
                       value={editedData.firstName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                   <div>
@@ -268,7 +268,7 @@ const Profile = () => {
                       name="lastName"
                       value={editedData.lastName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                 </div>
@@ -281,7 +281,7 @@ const Profile = () => {
                       name="email"
                       value={editedData.email}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                   <div>
@@ -291,7 +291,7 @@ const Profile = () => {
                       name="phone"
                       value={editedData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                 </div>
@@ -304,7 +304,7 @@ const Profile = () => {
                       name="position"
                       value={editedData.position}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                   <div>
@@ -314,7 +314,7 @@ const Profile = () => {
                       name="department"
                       value={editedData.department}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                 </div>
@@ -329,7 +329,7 @@ const Profile = () => {
                         name="address"
                         value={editedData.address}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                       />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -340,7 +340,7 @@ const Profile = () => {
                           name="city"
                           value={editedData.city}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                         />
                       </div>
                       <div>
@@ -350,7 +350,7 @@ const Profile = () => {
                           name="state"
                           value={editedData.state}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                         />
                       </div>
                       <div>
@@ -360,7 +360,7 @@ const Profile = () => {
                           name="zipCode"
                           value={editedData.zipCode}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                         />
                       </div>
                     </div>
@@ -395,12 +395,12 @@ const Profile = () => {
             {!showChangePassword ? (
               <>
                 <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Lock className="w-5 h-5 text-blue-600" />
+                  <Lock className="w-5 h-5 text-black" />
                   Security
                 </h3>
                 <button
                   onClick={() => setShowChangePassword(true)}
-                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                  className="w-full px-4 py-2 bg-[#C3EBFA] rounded-lg font-semibold hover:bg-[#a4e4fb] transition"
                 >
                   Change Password
                 </button>
@@ -417,7 +417,7 @@ const Profile = () => {
                       name="currentPassword"
                       value={passwordData.currentPassword}
                       onChange={handlePasswordChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10"
                     />
                     <button
                       type="button"
@@ -437,7 +437,7 @@ const Profile = () => {
                       name="newPassword"
                       value={passwordData.newPassword}
                       onChange={handlePasswordChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10"
                     />
                     <button
                       type="button"
@@ -457,7 +457,7 @@ const Profile = () => {
                       name="confirmPassword"
                       value={passwordData.confirmPassword}
                       onChange={handlePasswordChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10"
                     />
                     <button
                       type="button"

@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import AuthContext from './AuthContext';
 import axios from 'axios';
 
+axios.defaults.baseURL = "http://localhost:5000";
+
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(localStorage.getItem('role') || null); // admin, student, teacher, parent
@@ -13,6 +15,7 @@ const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password, userRole) => {
     setIsLoading(true);
     setError(null);
+    console.log("entry---------");
     try {
       // Different endpoints based on role
       const endpoint = {
@@ -21,7 +24,7 @@ const AuthProvider = ({ children }) => {
       }[userRole];
 
       const response = await axios.post(endpoint,{email,password});
-
+      console.log("response",response);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('role', userRole);
@@ -41,6 +44,8 @@ const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = useCallback(() => {
+    const confirm = window.confirm("Are you sure, You want to logout ?");
+    if(!confirm) return ;
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     setToken(null);
@@ -72,7 +77,7 @@ const AuthProvider = ({ children }) => {
     error,
     login,
     logout,
-    token,
+    axios,
     isAuthenticated: !!token,
   };
 

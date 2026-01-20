@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import Table from "../components/Table";
-import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 
-axios.defaults.baseURL = "http://localhost:5000";
 
 const columns = [
   { header: "Info", accessor: "info" },
@@ -29,6 +28,7 @@ const columns = [
 const TeacherListPage = () => {
   const [teachers, setTeachers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const {token , axios} = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -78,7 +78,7 @@ const TeacherListPage = () => {
         return;
       }
 
-      const response = await axios.post("/admin/teacher/create", formData);
+      const response = await axios.post("/admin/teacher/create", formData,{headers:{token}});
 
       if (response.status === 201) {
         alert("Teacher created successfully!");
@@ -116,7 +116,7 @@ const TeacherListPage = () => {
     }
 
     try {
-      const response = await axios.delete(`/admin/teacher/${teacherId}`);
+      const response = await axios.delete(`/admin/teacher/${teacherId}`,{headers:{token}});
       if (response.status === 200) {
         alert("Teacher deleted successfully");
         getAllTeachers();
@@ -147,7 +147,7 @@ const TeacherListPage = () => {
 
       <td>
         <div className="flex items-center gap-2">
-          <Link to={`/list/teachers/${item._id}`}>
+          <Link to={`/admin/teacher/${item._id}`}>
             <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#C3EBFA] cursor-pointer transition">
               <img src="/view.png" alt="View" className="w-4 h-4" />
             </button>

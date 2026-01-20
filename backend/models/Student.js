@@ -68,8 +68,9 @@ const StudentSchema = new mongoose.Schema({
         unique:true,
     },
     class: {
-        type:String,
-        required:true,
+        type: mongoose.Schema.ObjectId,
+        ref: "Class",
+        required: true,
     },
     section: {
         type:String,

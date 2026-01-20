@@ -33,6 +33,7 @@ export const createTeacher = async(req,res) =>{
 export const deleteTeacher = async(req,res) =>{
     try{
         const {teacherId} = req.params;
+        console.log("TeacherId",teacherId);
         await Teacher.findByIdAndUpdate(teacherId, {isActive:false});
         console.log(`Teacher with ID ${teacherId} marked as deleted.`);
         res.status(200).json({message:'Teacher deleted successfully'});
@@ -41,3 +42,29 @@ export const deleteTeacher = async(req,res) =>{
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+// Get a single teacher by ID
+export const getTeacherById = async (req, res) => {
+    try {
+        const { teacherId } = req.params;
+        const teacher = await Teacher.findById(teacherId);
+
+        if (!teacher) {
+            return res.status(404).json({
+                success: false,
+                message: "Teacher not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            teacher,
+        });
+    } catch (error) {
+        console.error("Error fetching teacher:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};

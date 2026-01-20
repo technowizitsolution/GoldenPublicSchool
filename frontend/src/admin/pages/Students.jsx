@@ -6,9 +6,7 @@ import Table from "../components/Table";
 //import TableSearch from "@/components/TableSearch";
 import { useAuth } from "../../context/AuthContext";
 
-import axios from "axios";
 
-axios.defaults.baseURL = "http://localhost:5000";
 
 const columns = [
     {
@@ -46,8 +44,9 @@ const columns = [
 const StudentListPage = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [classes, setClasses] = useState([]);
     const [students, setStudents] = useState([]);
-    const {token } = useAuth();
+    const { token ,axios} = useAuth();
 
     const [formData, setFormData] = useState({
         // Authentication
@@ -62,7 +61,7 @@ const StudentListPage = () => {
         bloodType: "",
         birthday: "",
         sex: "Male",
-        //photo: null,
+        photo: null,
         // Academic Information
         studentId: "",
         class: "",
@@ -103,31 +102,31 @@ const StudentListPage = () => {
             }
 
             //Create FormData to handle file upload
-            // const formDataToSend = new FormData();
-            // formDataToSend.append("username", formData.username);
-            // formDataToSend.append("email", formData.email);
-            // formDataToSend.append("password", formData.password);
-            // formDataToSend.append("firstName", formData.firstName);
-            // formDataToSend.append("lastName", formData.lastName);
-            // formDataToSend.append("phone", formData.phone);
-            // formDataToSend.append("address", formData.address);
-            // formDataToSend.append("bloodType", formData.bloodType);
-            // formDataToSend.append("studentId", formData.studentId);
-            // formDataToSend.append("birthday", formData.birthday);
-            // formDataToSend.append("sex", formData.sex);
-            // formDataToSend.append("class", formData.class);
-            // formDataToSend.append("section", formData.section);
-            // formDataToSend.append("parentName", formData.parentName);
-            // formDataToSend.append("parentPhone", formData.parentPhone);
-            // formDataToSend.append("parentEmail", formData.parentEmail);
+            const formDataToSend = new FormData();
+            formDataToSend.append("username", formData.username);
+            formDataToSend.append("email", formData.email);
+            formDataToSend.append("password", formData.password);
+            formDataToSend.append("firstName", formData.firstName);
+            formDataToSend.append("lastName", formData.lastName);
+            formDataToSend.append("phone", formData.phone);
+            formDataToSend.append("address", formData.address);
+            formDataToSend.append("bloodType", formData.bloodType);
+            formDataToSend.append("studentId", formData.studentId);
+            formDataToSend.append("birthday", formData.birthday);
+            formDataToSend.append("sex", formData.sex);
+            formDataToSend.append("class", formData.class);
+            formDataToSend.append("section", formData.section);
+            formDataToSend.append("parentName", formData.parentName);
+            formDataToSend.append("parentPhone", formData.parentPhone);
+            formDataToSend.append("parentEmail", formData.parentEmail);
 
             // Append photo if selected
-            // if (formData.photo) {
-            //     formDataToSend.append("photo", formData.photo);
-            // }
+            if (formData.photo) {
+                formDataToSend.append("avatar", formData.photo);
+            }
 
             // Make API request
-            const response = await axios.post("/admin/student/create", formData,{headers:{token}});
+            const response = await axios.post("/admin/student/create", formDataToSend, { headers: { token } });
 
             if (response.status === 201) {
                 alert("Student created successfully!");
@@ -146,7 +145,7 @@ const StudentListPage = () => {
                     studentId: "",
                     birthday: "",
                     sex: "Male",
-                    //photo: null,
+                    photo: null,
                 });
 
                 // Close modal
@@ -165,9 +164,23 @@ const StudentListPage = () => {
         }
     };
 
+    //Get all Classes
+    const getAllClasses = async () => {
+        try {
+            const response = await axios.get("/admin/classes");
+            if (response.status === 200) {
+                console.log("Fetched classes:", response.data);
+                setClasses(response.data.classes || response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching classes:", error);
+        }
+    };
+
 
     useEffect(() => {
         getAllStudents();
+        getAllClasses();
     }, []);
 
     useEffect(() => {
@@ -193,7 +206,7 @@ const StudentListPage = () => {
         }
 
         try {
-            const response = await axios.delete(`/admin/student/${studentId}`,{headers:{token}});
+            const response = await axios.delete(`/admin/student/${studentId}`, { headers: { token } });
             if (response.status === 200) {
                 alert("Student deleted successfully");
                 getAllStudents();
@@ -212,24 +225,24 @@ const StudentListPage = () => {
         >
             <td className="flex items-center gap-4 p-4">
                 <img
-                    src={item.photo}
+                    src={item.photo ? item.photo : '/avatar.png'}
                     alt={item.username}
                     className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
                 />
                 <div className="flex flex-col">
                     <h3 className="font-semibold">{item.username}</h3>
-                    <p className="text-xs text-gray-500">{item.class}</p>
+                    <p className="text-xs text-gray-500">{item.class.name}</p>
                 </div>
             </td>
 
             <td className="hidden md:table-cell">{item.studentId}</td>
-            <td className="hidden md:table-cell">{item.class}</td>
+            <td className="hidden md:table-cell">{item.class.name}</td>
             <td className="hidden lg:table-cell">{item.phone}</td>
             <td className="hidden lg:table-cell">{item.address}</td>
 
             <td>
                 <div className="flex items-center gap-2">
-                    <Link to={`/list/students/${item._id}`}>
+                    <Link to={`/admin/student/${item._id}`}>
                         <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#C3EBFA] cursor-pointer transition">
                             <img src="/view.png" alt="View" className="w-4 h-4" />
                         </button>
@@ -448,19 +461,51 @@ const StudentListPage = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-sm text-gray-700 block mb-2">
+                                        <label className="text-sm text-gray-700 block mb-2 font-medium">
                                             Class
                                         </label>
-                                        <input
-                                            type="text"
+                                        <select
                                             name="class"
                                             value={formData.class}
                                             onChange={handleChange}
-                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="e.g., 10-A"
+
+                                            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-100 bg-white text-gray-800 hover:border-blue-400 transition-all appearance-none overflow-y-auto cursor-pointer font-medium"
+                                            style={{
+                                                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233b82f6' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundPosition: 'right 1rem center',
+                                                backgroundAttachment: 'scroll',
+                                                paddingRight: '2.5rem',
+                                                color: '#1f2937',
+                                            }}
                                             required
-                                        />
+                                        >
+                                            <option value="" style={{ color: '#6b7280', backgroundColor: '#ffffff' }}>
+                                                Select a class
+                                            </option>
+                                            {console.log("Teachers : ", classes)};
+                                            {classes && classes.length > 0 ? (
+                                                classes.map((cls) => (
+                                                    <option
+                                                        key={cls._id}
+                                                        value={cls._id}
+                                                        style={{
+                                                            color: '#1f2937',
+                                                            backgroundColor: '#ffffff',
+                                                            padding: '8px 4px',
+                                                        }}
+                                                    >
+                                                        {cls.name}
+                                                    </option>
+                                                ))
+                                            ) : (
+                                                <option disabled style={{ color: '#9ca3af', backgroundColor: '#f3f4f6' }}>
+                                                    No Classes available
+                                                </option>
+                                            )}
+                                        </select>
                                     </div>
+
                                     <div>
                                         <label className="text-sm text-gray-700 block mb-2">
                                             Section
@@ -492,9 +537,9 @@ const StudentListPage = () => {
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>
-                                    {/*<div className="flex flex-col">
-
-                                        <label className="flex items-center justify-center gap-2 cursor-pointer text-blue-500 hover:text-blue-600">
+                                    <div>
+                                        <label className="text-sm text-gray-700 block mb-2">Photo</label>
+                                        <label className="flex items-center justify-center gap-2 cursor-pointer text-blue-500 hover:text-blue-600 border-2 border-dashed border-blue-300 rounded-lg p-3">
                                             <svg
                                                 className="w-5 h-5"
                                                 fill="none"
@@ -517,8 +562,32 @@ const StudentListPage = () => {
                                                 accept="image/*"
                                             />
                                         </label>
-                                    </div>*/}
+                                    </div>
                                 </div>
+
+                                {/* Photo Preview */}
+                                {formData.photo && (
+                                    <div className="mt-4">
+                                        <label className="text-sm text-gray-700 block mb-2">Photo Preview</label>
+                                        <div className="flex items-center gap-4">
+                                            <img
+                                                src={URL.createObjectURL(formData.photo)}
+                                                alt="Preview"
+                                                className="w-20 h-20 rounded-lg object-cover border border-gray-300"
+                                            />
+                                            <div className="flex flex-col gap-2">
+                                                <p className="text-sm text-gray-600">{formData.photo.name}</p>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, photo: null })}
+                                                    className="text-sm text-red-500 hover:text-red-700 font-semibold"
+                                                >
+                                                    Remove Photo
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
 
