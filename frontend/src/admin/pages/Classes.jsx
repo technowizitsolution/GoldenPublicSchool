@@ -3,8 +3,7 @@ import Pagination from "../components/Pagination";
 import Table from "../components/Table";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-
-
+import { X, Filter, Plus } from "lucide-react";
 
 const columns = [
   {
@@ -41,7 +40,8 @@ const ClassListPage = () => {
   const [classes, setClasses] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { token,axios } = useAuth();
+  const [showFilters, setShowFilters] = useState(false);
+  const { token, axios } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -68,7 +68,6 @@ const ClassListPage = () => {
     try {
       const response = await axios.get("/admin/classes");
       if (response.status === 200) {
-        console.log("Fetched classes:", response.data);
         setClasses(response.data.classes || response.data);
       }
     } catch (error) {
@@ -78,7 +77,7 @@ const ClassListPage = () => {
 
   const getAllTeachers = async () => {
     try {
-      const response = await axios.get("/admin/teachers",);
+      const response = await axios.get("/admin/teachers");
       if (response.status === 200) {
         setTeachers(response.data.teachers || response.data);
       }
@@ -172,95 +171,136 @@ const ClassListPage = () => {
   const renderRow = (item) => (
     <tr
       key={item._id}
-      className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
+      className="border-b border-gray-200 even:bg-slate-50 text-xs sm:text-sm hover:bg-lamaPurpleLight"
     >
-      <td className="flex items-center gap-4 p-4">{item.name}</td>
-      <td className="hidden md:table-cell">{item.section || "N/A"}</td>
-      <td className="hidden md:table-cell">{item.academicYear}</td>
-      <td className="hidden lg:table-cell">{item.capacity}</td>
-      <td className="hidden lg:table-cell">
+      <td className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4">{item.name}</td>
+      <td className="hidden md:table-cell p-3 sm:p-4">{item.section || "N/A"}</td>
+      <td className="hidden md:table-cell p-3 sm:p-4">{item.academicYear}</td>
+      <td className="hidden lg:table-cell p-3 sm:p-4">{item.capacity}</td>
+      <td className="hidden lg:table-cell p-3 sm:p-4">
         <span
-          className={`px-3 py-1 rounded-full text-white text-xs font-semibold ${item.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
+          className={`px-2 sm:px-3 py-1 rounded-full text-white text-xs font-semibold ${item.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
             }`}
         >
           {item.status}
         </span>
       </td>
-      <td>
-        <div className="flex items-center gap-2">
+      <td className="p-3 sm:p-4">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Link to={`/admin/class/${item._id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#C3EBFA] cursor-pointer transition">
-              <img src="/view.png" alt="View" className="w-4 h-4" />
+            <button className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-[#C3EBFA] cursor-pointer hover:bg-blue-200 transition">
+              <img src="/view.png" alt="View" className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
           </Link>
 
           <button
             onClick={() => handleDeleteClass(item._id)}
-            className="w-7 h-7 flex items-center justify-center rounded-full bg-[#CFCEFF] cursor-pointer transition "
+            className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full bg-[#CFCEFF] cursor-pointer hover:bg-purple-300 transition"
           >
-            <img src="/delete.png" alt="Delete" className="w-4 h-4" />
+            <img src="/delete.png" alt="Delete" className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
-
         </div>
       </td>
     </tr>
   );
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+    <div className="bg-white rounded-md flex-1 m-2 sm:m-3 md:m-4 mt-0">
       {/* TOP */}
-      <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">All Classes</h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <img src="/filter.png" alt="Filter" className="w-4 h-4" />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <img src="/sort.png" alt="Sort" className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow"
-            >
-              <img src="/create.png" alt="Create" className="w-4 h-4" />
-            </button>
-          </div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
+        <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">All Classes</h1>
+        <div className="flex items-center gap-2">
+          
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-[#CFCEFF] hover:bg-purple-300 transition"
+            title="Create"
+          >
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-gray-100" />
+          </button>
         </div>
       </div>
 
-      {/* TABLE */}
-      <div className="mt-4 overflow-x-auto">
+      {/* Mobile Card View */}
+      <div className="md:hidden p-3 sm:p-4 space-y-3">
+        {classes.length > 0 ? (
+          classes.map((classItem) => (
+            <div key={classItem._id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition">
+              <div className="flex justify-between items-start gap-2 mb-3">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 text-sm">{classItem.name}</h3>
+                  <p className="text-xs text-gray-600">{classItem.academicYear}</p>
+                </div>
+                <span
+                  className={`px-2 py-1 rounded-full text-white text-xs font-semibold flex-shrink-0 ${classItem.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
+                    }`}
+                >
+                  {classItem.status}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                <div>
+                  <p className="text-gray-600">Section</p>
+                  <p className="font-medium text-gray-900">{classItem.section || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Capacity</p>
+                  <p className="font-medium text-gray-900">{classItem.capacity}</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <Link to={`/admin/class/${classItem._id}`} className="flex-1">
+                  <button className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-medium py-2 rounded transition">
+                    View
+                  </button>
+                </Link>
+                <button
+                  onClick={() => handleDeleteClass(classItem._id)}
+                  className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 text-xs font-medium py-2 rounded transition"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500 py-8">No classes found</p>
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block mt-4 overflow-x-auto">
         <Table columns={columns} renderRow={renderRow} data={classes} />
       </div>
 
-      {/* PAGINATION */}
-      <Pagination />
+      
 
       {/* MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-none">
-          <div className="bg-white rounded-lg p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Create a new class</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-3 sm:p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[95vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 sticky top-0 bg-white">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Create a new class</h2>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 text-2xl"
+                className="text-gray-400 hover:text-gray-600 transition flex-shrink-0"
               >
-                ×
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
               {/* Class Information */}
               <div>
-                <label className="text-sm text-gray-600 font-semibold block mb-4">
+                <label className="text-xs sm:text-sm text-gray-600 font-semibold block mb-3 sm:mb-4">
                   Class Information
                 </label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Class Name *
                     </label>
                     <input
@@ -268,13 +308,13 @@ const ClassListPage = () => {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="e.g., 10-A"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Section
                     </label>
                     <input
@@ -282,12 +322,12 @@ const ClassListPage = () => {
                       name="section"
                       value={formData.section}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="e.g., A, B, C"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Academic Year *
                     </label>
                     <input
@@ -295,13 +335,13 @@ const ClassListPage = () => {
                       name="academicYear"
                       value={formData.academicYear}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="e.g., 2024-2025"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Capacity
                     </label>
                     <input
@@ -311,50 +351,43 @@ const ClassListPage = () => {
                       onChange={handleChange}
                       min="1"
                       max="100"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2 font-medium">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2 font-medium">
                       Class Teacher *
                     </label>
                     <select
                       name="classTeacher"
                       value={formData.classTeacher}
                       onChange={handleChange}
-          
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-100 bg-white text-gray-800 hover:border-blue-400 transition-all appearance-none overflow-y-auto cursor-pointer font-medium"
+                      className="w-full border border-gray-300 rounded-lg px-3 sm:px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-100 bg-white text-gray-800 hover:border-blue-400 transition-all appearance-none cursor-pointer font-medium"
                       style={{
                         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233b82f6' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                         backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'right 1rem center',
+                        backgroundPosition: 'right 0.75rem center',
                         backgroundAttachment: 'scroll',
-                        paddingRight: '2.5rem',
-                        color: '#1f2937',
+                        paddingRight: '2rem',
                       }}
                       required
                     >
-                      <option value="" style={{ color: '#6b7280', backgroundColor: '#ffffff' }}>
+                      <option value="" style={{ color: '#6b7280' }}>
                         Select a teacher
                       </option>
-                      {console.log("Teachers : ", teachers)};
                       {teachers && teachers.length > 0 ? (
                         teachers.map((teacher) => (
                           <option
                             key={teacher._id}
                             value={teacher._id}
-                            style={{
-                              color: '#1f2937',
-                              backgroundColor: '#ffffff',
-                              padding: '8px 4px',
-                            }}
+                            style={{ color: '#1f2937' }}
                           >
                             {teacher.name}
                           </option>
                         ))
                       ) : (
-                        <option disabled style={{ color: '#9ca3af', backgroundColor: '#f3f4f6' }}>
+                        <option disabled style={{ color: '#9ca3af' }}>
                           No teachers available
                         </option>
                       )}
@@ -362,14 +395,14 @@ const ClassListPage = () => {
                   </div>
 
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Status
                     </label>
                     <select
                       name="status"
                       value={formData.status}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="ACTIVE">Active</option>
                       <option value="ARCHIVED">Archived</option>
@@ -380,12 +413,12 @@ const ClassListPage = () => {
 
               {/* Fees Information */}
               <div>
-                <label className="text-sm text-gray-600 font-semibold block mb-4">
+                <label className="text-xs sm:text-sm text-gray-600 font-semibold block mb-3 sm:mb-4">
                   Fees Information
                 </label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Tuition Fee *
                     </label>
                     <input
@@ -393,13 +426,13 @@ const ClassListPage = () => {
                       name="fees.tuition"
                       value={formData.fees.tuition}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="0"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Admission Fee
                     </label>
                     <input
@@ -407,12 +440,12 @@ const ClassListPage = () => {
                       name="fees.admission"
                       value={formData.fees.admission}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="0"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Exam Fee
                     </label>
                     <input
@@ -420,12 +453,12 @@ const ClassListPage = () => {
                       name="fees.exam"
                       value={formData.fees.exam}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="0"
                     />
                   </div>
                   <div>
-                    <label className="text-sm text-gray-700 block mb-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Transport Fee
                     </label>
                     <input
@@ -433,19 +466,19 @@ const ClassListPage = () => {
                       name="fees.transport"
                       value={formData.fees.transport}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="0"
                     />
                   </div>
-                  <div className="col-span-2">
-                    <label className="text-sm text-gray-700 block mb-2">
+                  <div className="sm:col-span-2">
+                    <label className="text-xs sm:text-sm text-gray-700 block mb-2">
                       Currency
                     </label>
                     <select
                       name="fees.currency"
                       value={formData.fees.currency}
                       onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="INR">INR (₹)</option>
                       <option value="USD">USD ($)</option>
@@ -457,12 +490,21 @@ const ClassListPage = () => {
               </div>
 
               {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-200"
-              >
-                Create Class
-              </button>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 sm:py-3 rounded-lg transition duration-200 text-sm sm:text-base"
+                >
+                  Create Class
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold py-2 sm:py-3 rounded-lg transition duration-200 text-sm sm:text-base"
+                >
+                  Cancel
+                </button>
+              </div>
             </form>
           </div>
         </div>
