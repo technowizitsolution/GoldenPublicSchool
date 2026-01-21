@@ -3,6 +3,12 @@ import { Link } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import Table from "../components/Table";
 import { useAuth } from "../../context/AuthContext";
+import { 
+  TableRowShimmer, 
+  MobileCardShimmer, 
+  ModalFormShimmer,
+  ListHeaderShimmer 
+} from "../components/Shimmer";
 import { X, Filter, Plus } from "lucide-react";
 
 const columns = [
@@ -28,6 +34,8 @@ const columns = [
 const TeacherListPage = () => {
   const [teachers, setTeachers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formSubmitting, setFormSubmitting] = useState(false);
   const { token, axios } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
@@ -49,6 +57,7 @@ const TeacherListPage = () => {
 
   const getAllTeachers = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("/admin/teachers");
       if (response.status === 200) {
         setTeachers(response.data.teachers || response.data);
@@ -56,6 +65,8 @@ const TeacherListPage = () => {
     } catch (error) {
       console.error("Error fetching teachers:", error);
       alert("Failed to load teachers");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,6 +87,7 @@ const TeacherListPage = () => {
         return;
       }
 
+      setFormSubmitting(true);
       const response = await axios.post("/admin/teacher/create", formData, { headers: { token } });
 
       if (response.status === 201) {
@@ -96,12 +108,14 @@ const TeacherListPage = () => {
         });
 
         setIsModalOpen(false);
-        getAllTeachers();
+        await getAllTeachers();
       }
     } catch (error) {
       console.error("Error creating teacher:", error);
       const errorMessage = error.response?.data?.message || "Error creating teacher";
       alert(errorMessage);
+    } finally {
+      setFormSubmitting(false);
     }
   };
 
@@ -114,7 +128,7 @@ const TeacherListPage = () => {
       const response = await axios.delete(`/admin/teacher/${teacherId}`, { headers: { token } });
       if (response.status === 200) {
         alert("Teacher deleted successfully");
-        getAllTeachers();
+        await getAllTeachers();
       }
     } catch (error) {
       console.error("Error deleting teacher:", error);
@@ -161,70 +175,78 @@ const TeacherListPage = () => {
   return (
     <div className="bg-white rounded-lg m-2 sm:m-3 md:m-4">
       {/* TOP */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
-        <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">All Teachers</h1>
+      {loading ? (
+        <ListHeaderShimmer />
+      ) : (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">All Teachers</h1>
 
-        <div className="flex items-center gap-2">
-          
-
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-[#CFCEFF] hover:bg-purple-300 transition"
-          >
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-gray-100" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-[#CFCEFF] hover:bg-purple-300 transition"
+            >
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-gray-100" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Mobile Card View */}
-      <div className="md:hidden p-2 sm:p-3 space-y-3">
-        {teachers.length > 0 ? (
-          teachers.map((teacher) => (
-            <div key={teacher._id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition">
-              <div className="flex justify-between items-start gap-2 mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-sm">{teacher.name}</h3>
-                  <p className="text-xs text-gray-600 break-all">{teacher.email}</p>
+      {loading ? (
+        <MobileCardShimmer cards={4} />
+      ) : (
+        <div className="md:hidden p-2 sm:p-3 space-y-3">
+          {teachers.length > 0 ? (
+            teachers.map((teacher) => (
+              <div key={teacher._id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex justify-between items-start gap-2 mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm">{teacher.name}</h3>
+                    <p className="text-xs text-gray-600 break-all">{teacher.email}</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                <div>
-                  <p className="text-gray-600">Employee ID</p>
-                  <p className="font-medium text-gray-900">{teacher.employeeId || "N/A"}</p>
+                <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                  <div>
+                    <p className="text-gray-600">Employee ID</p>
+                    <p className="font-medium text-gray-900">{teacher.employeeId || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">Phone</p>
+                    <p className="font-medium text-gray-900">{teacher.phone || "N/A"}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-gray-600">Phone</p>
-                  <p className="font-medium text-gray-900">{teacher.phone || "N/A"}</p>
-                </div>
-              </div>
 
-              <div className="flex gap-2 justify-end">
-                <Link to={`/admin/teacher/${teacher._id}`} className="flex-1">
-                  <button className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-medium py-2 rounded transition">
-                    View
+                <div className="flex gap-2 justify-end">
+                  <Link to={`/admin/teacher/${teacher._id}`} className="flex-1">
+                    <button className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-medium py-2 rounded transition">
+                      View
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteTeacher(teacher._id)}
+                    className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 text-xs font-medium py-2 rounded transition"
+                  >
+                    Delete
                   </button>
-                </Link>
-                <button
-                  onClick={() => handleDeleteTeacher(teacher._id)}
-                  className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 text-xs font-medium py-2 rounded transition"
-                >
-                  Delete
-                </button>
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500 py-8 text-sm">No teachers found</p>
-        )}
-      </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500 py-8 text-sm">No teachers found</p>
+          )}
+        </div>
+      )}
 
       {/* Desktop Table View */}
-      <div className="hidden md:block">
-        <Table columns={columns} renderRow={renderRow} data={teachers} />
-      </div>
-
-      
+      {loading ? (
+        <TableRowShimmer rows={5} columns={5} />
+      ) : (
+        <div className="hidden md:block">
+          <Table columns={columns} renderRow={renderRow} data={teachers} />
+        </div>
+      )}
 
       {/* MODAL */}
       {isModalOpen && (
@@ -416,9 +438,10 @@ const TeacherListPage = () => {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 sm:py-3 rounded-lg transition duration-200 text-sm sm:text-base"
+                  disabled={formSubmitting}
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold py-2 sm:py-3 rounded-lg transition duration-200 text-sm sm:text-base"
                 >
-                  Create Teacher
+                  {formSubmitting ? 'Creating...' : 'Create Teacher'}
                 </button>
                 <button
                   type="button"

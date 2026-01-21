@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Pagination from "../components/Pagination";
 import Table from "../components/Table";
 import { useAuth } from "../../context/AuthContext";
 import { X, Filter, Plus } from "lucide-react";
+import {TableRowShimmer,MobileCardShimmer,ListHeaderShimmer} from '../components/Shimmer';
 
 const columns = [
     {
@@ -43,6 +43,7 @@ const StudentListPage = () => {
     const [classes, setClasses] = useState([]);
     const [students, setStudents] = useState([]);
     const { token, axios } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         username: "",
@@ -163,9 +164,11 @@ const StudentListPage = () => {
 
     const getAllStudents = async () => {
         try {
+            setLoading(true);
             const response = await axios.get('/admin/students');
             if (response.status === 200) {
                 setStudents(response.data.students);
+                setLoading(false);
             }
         } catch (error) {
             console.error("Error fetching students:", error);
@@ -288,7 +291,9 @@ const StudentListPage = () => {
             )}
 
             {/* Mobile Card View */}
-            <div className="md:hidden p-2 sm:p-3 space-y-3">
+            {
+             loading ? <MobileCardShimmer cards={4} /> 
+              :(<div className="md:hidden p-2 sm:p-3 space-y-3">
                 {filteredStudents.length > 0 ? (
                     filteredStudents.map((student) => (
                         <div key={student._id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition">
@@ -335,16 +340,18 @@ const StudentListPage = () => {
                         {searchTerm ? "No students found matching your search" : "No students found"}
                     </p>
                 )}
-            </div>
+              </div>)
+            }
 
             {/* Desktop Table View */}
+            {loading ? <TableRowShimmer rows={5} columns={6} /> :(
             <div className="hidden md:block">
                 <Table
                     columns={columns}
                     renderRow={renderRow}
                     data={filteredStudents}
                 />
-            </div>
+            </div>)}
 
             
 

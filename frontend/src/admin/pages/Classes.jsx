@@ -3,6 +3,11 @@ import Pagination from "../components/Pagination";
 import Table from "../components/Table";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { 
+  TableRowShimmer, 
+  MobileCardShimmer, 
+  ListHeaderShimmer 
+} from "../components/Shimmer";
 import { X, Filter, Plus } from "lucide-react";
 
 const columns = [
@@ -40,6 +45,8 @@ const ClassListPage = () => {
   const [classes, setClasses] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formSubmitting, setFormSubmitting] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const { token, axios } = useAuth();
 
@@ -66,12 +73,15 @@ const ClassListPage = () => {
 
   const getAllClasses = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("/admin/classes");
       if (response.status === 200) {
         setClasses(response.data.classes || response.data);
       }
     } catch (error) {
       console.error("Error fetching classes:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,6 +125,7 @@ const ClassListPage = () => {
         return;
       }
 
+      setFormSubmitting(true);
       const response = await axios.post("/admin/class/create", formData, {
         headers: { token },
       });
@@ -137,13 +148,15 @@ const ClassListPage = () => {
           status: "ACTIVE",
         });
         setIsModalOpen(false);
-        getAllClasses();
+        await getAllClasses();
       }
     } catch (error) {
       console.error("Error creating class:", error);
       const errorMessage =
         error.response?.data?.message || "Error creating class";
       alert(errorMessage);
+    } finally {
+      setFormSubmitting(false);
     }
   };
 
@@ -158,7 +171,7 @@ const ClassListPage = () => {
       });
       if (response.status === 200) {
         alert("Class deleted successfully");
-        getAllClasses();
+        await getAllClasses();
       }
     } catch (error) {
       console.error("Error deleting class:", error);
@@ -207,75 +220,84 @@ const ClassListPage = () => {
   return (
     <div className="bg-white rounded-md flex-1 m-2 sm:m-3 md:m-4 mt-0">
       {/* TOP */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
-        <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">All Classes</h1>
-        <div className="flex items-center gap-2">
-          
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-[#CFCEFF] hover:bg-purple-300 transition"
-            title="Create"
-          >
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-gray-100" />
-          </button>
+      {loading ? (
+        <ListHeaderShimmer />
+      ) : (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">All Classes</h1>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-[#CFCEFF] hover:bg-purple-300 transition"
+              title="Create"
+            >
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-gray-100" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Mobile Card View */}
-      <div className="md:hidden p-3 sm:p-4 space-y-3">
-        {classes.length > 0 ? (
-          classes.map((classItem) => (
-            <div key={classItem._id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition">
-              <div className="flex justify-between items-start gap-2 mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-sm">{classItem.name}</h3>
-                  <p className="text-xs text-gray-600">{classItem.academicYear}</p>
+      {loading ? (
+        <MobileCardShimmer cards={4} />
+      ) : (
+        <div className="md:hidden p-3 sm:p-4 space-y-3">
+          {classes.length > 0 ? (
+            classes.map((classItem) => (
+              <div key={classItem._id} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition">
+                <div className="flex justify-between items-start gap-2 mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm">{classItem.name}</h3>
+                    <p className="text-xs text-gray-600">{classItem.academicYear}</p>
+                  </div>
+                  <span
+                    className={`px-2 py-1 rounded-full text-white text-xs font-semibold flex-shrink-0 ${classItem.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
+                      }`}
+                  >
+                    {classItem.status}
+                  </span>
                 </div>
-                <span
-                  className={`px-2 py-1 rounded-full text-white text-xs font-semibold flex-shrink-0 ${classItem.status === "ACTIVE" ? "bg-green-500" : "bg-red-500"
-                    }`}
-                >
-                  {classItem.status}
-                </span>
-              </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                <div>
-                  <p className="text-gray-600">Section</p>
-                  <p className="font-medium text-gray-900">{classItem.section || "N/A"}</p>
+                <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                  <div>
+                    <p className="text-gray-600">Section</p>
+                    <p className="font-medium text-gray-900">{classItem.section || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600">Capacity</p>
+                    <p className="font-medium text-gray-900">{classItem.capacity}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-gray-600">Capacity</p>
-                  <p className="font-medium text-gray-900">{classItem.capacity}</p>
-                </div>
-              </div>
 
-              <div className="flex gap-2 justify-end">
-                <Link to={`/admin/class/${classItem._id}`} className="flex-1">
-                  <button className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-medium py-2 rounded transition">
-                    View
+                <div className="flex gap-2 justify-end">
+                  <Link to={`/admin/class/${classItem._id}`} className="flex-1">
+                    <button className="w-full bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-medium py-2 rounded transition">
+                      View
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteClass(classItem._id)}
+                    className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 text-xs font-medium py-2 rounded transition"
+                  >
+                    Delete
                   </button>
-                </Link>
-                <button
-                  onClick={() => handleDeleteClass(classItem._id)}
-                  className="flex-1 bg-red-50 text-red-600 hover:bg-red-100 text-xs font-medium py-2 rounded transition"
-                >
-                  Delete
-                </button>
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500 py-8">No classes found</p>
-        )}
-      </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500 py-8">No classes found</p>
+          )}
+        </div>
+      )}
 
       {/* Desktop Table View */}
-      <div className="hidden md:block mt-4 overflow-x-auto">
-        <Table columns={columns} renderRow={renderRow} data={classes} />
-      </div>
-
-      
+      {loading ? (
+        <TableRowShimmer rows={5} columns={6} />
+      ) : (
+        <div className="hidden md:block mt-4 overflow-x-auto">
+          <Table columns={columns} renderRow={renderRow} data={classes} />
+        </div>
+      )}
 
       {/* MODAL */}
       {isModalOpen && (
@@ -493,9 +515,10 @@ const ClassListPage = () => {
               <div className="flex gap-3 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 sm:py-3 rounded-lg transition duration-200 text-sm sm:text-base"
+                  disabled={formSubmitting}
+                  className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-semibold py-2 sm:py-3 rounded-lg transition duration-200 text-sm sm:text-base"
                 >
-                  Create Class
+                  {formSubmitting ? 'Creating...' : 'Create Class'}
                 </button>
                 <button
                   type="button"

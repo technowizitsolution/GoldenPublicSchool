@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Search, ChevronLeft, X, Filter } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import {
+  ClassCardShimmer,
+  SummaryCardsShimmer,
+  StudentTableShimmer,
+  StudentCardsShimmer
+} from '../components/ShimmerLoader';
 
 const Fees = () => {
   const [selectedClass, setSelectedClass] = useState(null);
@@ -11,6 +17,9 @@ const Fees = () => {
   const [selectedClassData, setSelectedClassData] = useState([]);
   const [feesData, setFeesData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [classesLoading, setClassesLoading] = useState(false);
+  const [studentsLoading, setStudentsLoading] = useState(false);
+  const [feesLoading, setFeesLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -19,7 +28,7 @@ const Fees = () => {
 
   const getAllStudents = async () => {
     try {
-      setLoading(true);
+      setStudentsLoading(true);
       const response = await axios.get('/admin/students');
       if (response.status === 200) {
         setStudents(response.data.students || response.data);
@@ -27,13 +36,13 @@ const Fees = () => {
     } catch (error) {
       console.error("Error fetching students:", error);
     } finally {
-      setLoading(false);
+      setStudentsLoading(false);
     }
   };
 
   const getAllClasses = async () => {
     try {
-      setLoading(true);
+      setClassesLoading(true);
       const response = await axios.get("/admin/classes");
       if (response.status === 200) {
         setClasses(response.data.classes || response.data);
@@ -41,12 +50,13 @@ const Fees = () => {
     } catch (error) {
       console.error("Error fetching classes:", error);
     } finally {
-      setLoading(false);
+      setClassesLoading(false);
     }
   };
 
   const getFeesData = async () => {
     try {
+      setFeesLoading(true);
       const response = await axios.get('/admin/student/feesRecords', { headers: { token } });
       if (response.status === 200) {
         const feesMap = {};
@@ -65,6 +75,8 @@ const Fees = () => {
       }
     } catch (error) {
       console.warn("Fees data endpoint not available, using defaults:", error.message);
+    } finally {
+      setFeesLoading(false);
     }
   };
 
@@ -165,121 +177,129 @@ const Fees = () => {
         </div>
 
         {/* Overall Summary - Responsive Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
-          <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Classes</p>
-            <p className="text-2xl sm:text-3xl font-bold text-gray-900">{Classes.length}</p>
-            <p className="text-gray-500 text-xs mt-2">In school</p>
-          </div>
+        {classesLoading || studentsLoading || feesLoading ? (
+          <SummaryCardsShimmer />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
+            <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+              <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Classes</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900">{Classes.length}</p>
+              <p className="text-gray-500 text-xs mt-2">In school</p>
+            </div>
 
-          <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Collected</p>
-            <p className="text-2xl sm:text-3xl font-bold text-green-600">Rs. {overallCollected.toLocaleString()}</p>
-            <p className="text-gray-500 text-xs mt-2">Overall fees collected</p>
-          </div>
+            <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-green-500">
+              <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Collected</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600">Rs. {overallCollected.toLocaleString()}</p>
+              <p className="text-gray-500 text-xs mt-2">Overall fees collected</p>
+            </div>
 
-          <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-yellow-500 sm:col-span-2 lg:col-span-1">
-            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Pending</p>
-            <p className="text-2xl sm:text-3xl font-bold text-yellow-600">Rs. {(overallTotal - overallCollected).toLocaleString()}</p>
-            <p className="text-gray-500 text-xs mt-2">Awaiting payment</p>
+            <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-yellow-500 sm:col-span-2 lg:col-span-1">
+              <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Pending</p>
+              <p className="text-2xl sm:text-3xl font-bold text-yellow-600">Rs. {(overallTotal - overallCollected).toLocaleString()}</p>
+              <p className="text-gray-500 text-xs mt-2">Awaiting payment</p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Classes Grid - Fully Responsive */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {Classes.map((classItem) => {
-            const classStudents = students.filter(s => s.class?._id === classItem._id || s.class === classItem._id);
-            const perStudentFee = classItem.fees.tuition + classItem.fees.admission + classItem.fees.exam + classItem.fees.transport;
-            const total = perStudentFee * classStudents.length;
+        {classesLoading || studentsLoading || feesLoading ? (
+          <ClassCardShimmer />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {Classes.map((classItem) => {
+              const classStudents = students.filter(s => s.class?._id === classItem._id || s.class === classItem._id);
+              const perStudentFee = classItem.fees.tuition + classItem.fees.admission + classItem.fees.exam + classItem.fees.transport;
+              const total = perStudentFee * classStudents.length;
 
-            let collected = 0;
-            classStudents.forEach(student => {
-              const studentFees = feesData[student._id];
-              if (studentFees) {
-                collected += studentFees.paidAmount || 0;
-              }
-            });
+              let collected = 0;
+              classStudents.forEach(student => {
+                const studentFees = feesData[student._id];
+                if (studentFees) {
+                  collected += studentFees.paidAmount || 0;
+                }
+              });
 
-            const pending = total - collected;
-            const percentage = total > 0 ? ((collected / total) * 100).toFixed(1) : 0;
+              const pending = total - collected;
+              const percentage = total > 0 ? ((collected / total) * 100).toFixed(1) : 0;
 
-            return (
-              <div
-                key={classItem._id}
-                onClick={() => {
-                  setSelectedClass(classItem._id);
-                  filteredClassStudents(classItem._id);
-                }}
-                className="bg-white p-4 sm:p-5 md:p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border border-gray-200 hover:border-blue-500"
-              >
-                {/* HEADER */}
-                <div className="flex justify-between items-start mb-3 gap-2">
-                  <div className="flex-1">
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
-                      Class {classItem.name}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Academic Year: {classItem.academicYear}
+              return (
+                <div
+                  key={classItem._id}
+                  onClick={() => {
+                    setSelectedClass(classItem._id);
+                    filteredClassStudents(classItem._id);
+                  }}
+                  className="bg-white p-4 sm:p-5 md:p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer border border-gray-200 hover:border-blue-500"
+                >
+                  {/* HEADER */}
+                  <div className="flex justify-between items-start mb-3 gap-2">
+                    <div className="flex-1">
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
+                        Class {classItem.name}
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Academic Year: {classItem.academicYear}
+                      </p>
+                    </div>
+
+                    <span
+                      className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${classItem.status === "ACTIVE"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-200 text-gray-600"
+                        }`}
+                    >
+                      {classItem.status}
+                    </span>
+                  </div>
+
+                  {/* FEES SUMMARY */}
+                  <div className="mb-4">
+                    <div className="flex justify-between text-xs sm:text-sm mb-1">
+                      <span className="text-gray-600">Collected</span>
+                      <span className="font-semibold text-green-600">
+                        ₹{collected.toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between text-xs sm:text-sm mb-2">
+                      <span className="text-gray-600">Pending</span>
+                      <span className="font-semibold text-red-600">
+                        ₹{pending.toLocaleString()}
+                      </span>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-blue-500 h-2 rounded-full transition-all"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+
+                    <p className="text-xs text-right text-gray-500 mt-1">
+                      {percentage}% collected
                     </p>
                   </div>
 
-                  <span
-                    className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${classItem.status === "ACTIVE"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-200 text-gray-600"
-                      }`}
-                  >
-                    {classItem.status}
-                  </span>
+                  {/* FOOTER */}
+                  <div className="flex justify-between items-center text-xs sm:text-sm text-gray-600 mb-3">
+                    <div>
+                      👨‍🎓 {classStudents.length}/{classItem.capacity}
+                    </div>
+                    <div>
+                      💰 ₹{perStudentFee.toLocaleString()} / student
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <button className="w-full py-2 bg-blue-50 text-blue-600 rounded-lg font-medium text-sm hover:bg-blue-100 transition">
+                    View Details →
+                  </button>
                 </div>
-
-                {/* FEES SUMMARY */}
-                <div className="mb-4">
-                  <div className="flex justify-between text-xs sm:text-sm mb-1">
-                    <span className="text-gray-600">Collected</span>
-                    <span className="font-semibold text-green-600">
-                      ₹{collected.toLocaleString()}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between text-xs sm:text-sm mb-2">
-                    <span className="text-gray-600">Pending</span>
-                    <span className="font-semibold text-red-600">
-                      ₹{pending.toLocaleString()}
-                    </span>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-500 h-2 rounded-full transition-all"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-
-                  <p className="text-xs text-right text-gray-500 mt-1">
-                    {percentage}% collected
-                  </p>
-                </div>
-
-                {/* FOOTER */}
-                <div className="flex justify-between items-center text-xs sm:text-sm text-gray-600 mb-3">
-                  <div>
-                    👨‍🎓 {classStudents.length}/{classItem.capacity}
-                  </div>
-                  <div>
-                    💰 ₹{perStudentFee.toLocaleString()} / student
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <button className="w-full py-2 bg-blue-50 text-blue-600 rounded-lg font-medium text-sm hover:bg-blue-100 transition">
-                  View Details →
-                </button>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
@@ -480,31 +500,35 @@ const Fees = () => {
       </div>
 
       {/* Summary Cards - Responsive */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
-        <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-          <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Fees</p>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">Rs. {totalFees.toLocaleString()}</p>
-          <p className="text-gray-500 text-xs mt-2">From this class</p>
-        </div>
+      {feesLoading ? (
+        <SummaryCardsShimmer />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+          <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Fees</p>
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900">Rs. {totalFees.toLocaleString()}</p>
+            <p className="text-gray-500 text-xs mt-2">From this class</p>
+          </div>
 
-        <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-          <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Collected</p>
-          <p className="text-2xl sm:text-3xl font-bold text-green-600">Rs. {totalPaid.toLocaleString()}</p>
-          <p className="text-gray-500 text-xs mt-2">Amount received</p>
-        </div>
+          <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-green-500">
+            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Collected</p>
+            <p className="text-2xl sm:text-3xl font-bold text-green-600">Rs. {totalPaid.toLocaleString()}</p>
+            <p className="text-gray-500 text-xs mt-2">Amount received</p>
+          </div>
 
-        <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
-          <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Pending</p>
-          <p className="text-2xl sm:text-3xl font-bold text-yellow-600">Rs. {totalPending.toLocaleString()}</p>
-          <p className="text-gray-500 text-xs mt-2">Awaiting payment</p>
-        </div>
+          <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
+            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Pending</p>
+            <p className="text-2xl sm:text-3xl font-bold text-yellow-600">Rs. {totalPending.toLocaleString()}</p>
+            <p className="text-gray-500 text-xs mt-2">Awaiting payment</p>
+          </div>
 
-        <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-red-500">
-          <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Collection Rate</p>
-          <p className="text-2xl sm:text-3xl font-bold text-red-600">{totalFees > 0 ? ((totalPaid / totalFees) * 100).toFixed(1) : 0}%</p>
-          <p className="text-gray-500 text-xs mt-2">Overall collection</p>
+          <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-red-500">
+            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Collection Rate</p>
+            <p className="text-2xl sm:text-3xl font-bold text-red-600">{totalFees > 0 ? ((totalPaid / totalFees) * 100).toFixed(1) : 0}%</p>
+            <p className="text-gray-500 text-xs mt-2">Overall collection</p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Search and Filter - Responsive */}
       <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow-sm mb-6">
@@ -571,96 +595,104 @@ const Fees = () => {
       {/* Students Table - Mobile Card View + Desktop Table */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Mobile Card View */}
-        <div className="md:hidden space-y-3 p-3">
-          {filteredData.length > 0 ? (
-            filteredData.map((student) => (
-              <div key={student._id} className="border border-gray-200 rounded-lg p-4 space-y-2">
-                <div className="flex justify-between items-start gap-2 mb-2">
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">{student.firstName} {student.lastName}</p>
-                    <p className="text-xs text-gray-600">{student.studentId}</p>
+        {feesLoading ? (
+          <StudentCardsShimmer />
+        ) : (
+          <div className="md:hidden space-y-3 p-3">
+            {filteredData.length > 0 ? (
+              filteredData.map((student) => (
+                <div key={student._id} className="border border-gray-200 rounded-lg p-4 space-y-2">
+                  <div className="flex justify-between items-start gap-2 mb-2">
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">{student.firstName} {student.lastName}</p>
+                      <p className="text-xs text-gray-600">{student.studentId}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(student.status)}`}>
+                      {getStatusLabel(student.status)}
+                    </span>
                   </div>
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(student.status)}`}>
-                    {getStatusLabel(student.status)}
-                  </span>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Total Fees:</span>
+                      <span className="font-semibold">Rs. {student.totalFees.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Paid:</span>
+                      <span className="font-semibold text-green-600">Rs. {student.paid.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Remaining:</span>
+                      <span className="font-semibold text-red-600">Rs. {student.remaining.toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedStudent(student)}
+                    className="w-full mt-3 bg-blue-600 text-white text-xs font-medium py-2 rounded-lg hover:bg-blue-700 transition"
+                  >
+                    View Details
+                  </button>
                 </div>
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Fees:</span>
-                    <span className="font-semibold">Rs. {student.totalFees.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Paid:</span>
-                    <span className="font-semibold text-green-600">Rs. {student.paid.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Remaining:</span>
-                    <span className="font-semibold text-red-600">Rs. {student.remaining.toLocaleString()}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setSelectedStudent(student)}
-                  className="w-full mt-3 bg-blue-600 text-white text-xs font-medium py-2 rounded-lg hover:bg-blue-700 transition"
-                >
-                  View Details
-                </button>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-500 py-8 text-sm">No students found</p>
-          )}
-        </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-500 py-8 text-sm">No students found</p>
+            )}
+          </div>
+        )}
 
         {/* Desktop Table View */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-100 border-b border-gray-200">
-                <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">Name</th>
-                <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">ID</th>
-                <th className="px-4 md:px-6 py-3 text-right text-xs md:text-sm font-semibold text-gray-700">Total</th>
-                <th className="px-4 md:px-6 py-3 text-right text-xs md:text-sm font-semibold text-gray-700">Paid</th>
-                <th className="px-4 md:px-6 py-3 text-right text-xs md:text-sm font-semibold text-gray-700">Remaining</th>
-                <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">Due Date</th>
-                <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.length > 0 ? (
-                filteredData.map((student) => (
-                  <tr key={student._id} className="border-b border-gray-200 hover:bg-gray-50 transition">
-                    <td className="px-4 md:px-6 py-4 text-xs md:text-sm font-medium text-gray-900">{student.firstName} {student.lastName}</td>
-                    <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-gray-600">{student.studentId}</td>
-                    <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-right text-gray-900 font-medium">Rs. {student.totalFees.toLocaleString()}</td>
-                    <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-right text-green-600 font-medium">Rs. {student.paid.toLocaleString()}</td>
-                    <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-right text-gray-900 font-medium">Rs. {student.remaining.toLocaleString()}</td>
-                    <td className="px-4 md:px-6 py-4 text-xs md:text-sm">
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(student.status)}`}>
-                        {getStatusLabel(student.status)}
-                      </span>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-gray-600">{new Date(student.dueDate).toLocaleDateString()}</td>
-                    <td className="px-4 md:px-6 py-4 text-xs md:text-sm">
-                      <button
-                        onClick={() => setSelectedStudent(student)}
-                        className="text-blue-600 hover:text-blue-800 font-medium transition"
-                      >
-                        View
-                      </button>
+        {feesLoading ? (
+          <StudentTableShimmer />
+        ) : (
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-200">
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">Name</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">ID</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs md:text-sm font-semibold text-gray-700">Total</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs md:text-sm font-semibold text-gray-700">Paid</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs md:text-sm font-semibold text-gray-700">Remaining</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">Status</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">Due Date</th>
+                  <th className="px-4 md:px-6 py-3 text-left text-xs md:text-sm font-semibold text-gray-700">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.length > 0 ? (
+                  filteredData.map((student) => (
+                    <tr key={student._id} className="border-b border-gray-200 hover:bg-gray-50 transition">
+                      <td className="px-4 md:px-6 py-4 text-xs md:text-sm font-medium text-gray-900">{student.firstName} {student.lastName}</td>
+                      <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-gray-600">{student.studentId}</td>
+                      <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-right text-gray-900 font-medium">Rs. {student.totalFees.toLocaleString()}</td>
+                      <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-right text-green-600 font-medium">Rs. {student.paid.toLocaleString()}</td>
+                      <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-right text-gray-900 font-medium">Rs. {student.remaining.toLocaleString()}</td>
+                      <td className="px-4 md:px-6 py-4 text-xs md:text-sm">
+                        <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(student.status)}`}>
+                          {getStatusLabel(student.status)}
+                        </span>
+                      </td>
+                      <td className="px-4 md:px-6 py-4 text-xs md:text-sm text-gray-600">{new Date(student.dueDate).toLocaleDateString()}</td>
+                      <td className="px-4 md:px-6 py-4 text-xs md:text-sm">
+                        <button
+                          onClick={() => setSelectedStudent(student)}
+                          className="text-blue-600 hover:text-blue-800 font-medium transition"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="8" className="px-6 py-8 text-center text-gray-500 text-sm">
+                      No students found matching your search criteria.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="8" className="px-6 py-8 text-center text-gray-500 text-sm">
-                    No students found matching your search criteria.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Summary Footer */}
