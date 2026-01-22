@@ -20,6 +20,7 @@ import StudentProfile from "./admin/pages/StudentProfile";
 import ClassDetails from "./admin/pages/ClassDetails";
 import TeacherProfile from './admin/pages/TeacherProfile';
 import Settings  from './admin/pages/Settings'
+import UniformInventory from './admin/pages/UniformInventory';
 
 
 
@@ -53,6 +54,7 @@ const App = () => {
           <Route path="/admin/class/:id" element={<ClassDetails />} />
           <Route path="/admin/teacher/:id" element={<TeacherProfile />}/>
           <Route path="/admin/settings" element={<Settings />}/>
+          <Route path="/admin/uniforms/inventory" element={<UniformInventory />} />
         </Route>
 
         {/* Student Routes - Protected */}

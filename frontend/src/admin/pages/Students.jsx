@@ -165,11 +165,13 @@ const StudentListPage = () => {
     const getAllStudents = async () => {
         try {
             setLoading(true);
+            console.log("Fetching students...",students);
             const response = await axios.get('/admin/students');
             if (response.status === 200) {
                 setStudents(response.data.students);
                 setLoading(false);
             }
+            console.log("students: ",response.data.students);
         } catch (error) {
             console.error("Error fetching students:", error);
         }

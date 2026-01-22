@@ -7,6 +7,7 @@ import adminStudentRouter from './routes/admin/adminStudentRoute.js';
 import adminTeacherRouter from './routes/admin/adminTeacherRoute.js';
 import adminLoginRouter from './routes/admin/adminLoginRoute.js';
 import adminClassRouter from './routes/admin/adminClassRoute.js';
+import adminUniformRouter from './routes/admin/adminUniformRoutes.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/admin',adminStudentRouter);
 app.use('/admin',adminTeacherRouter);
 app.use('/',adminLoginRouter);
 app.use('/admin',adminClassRouter);
+app.use('/admin/uniforms',adminUniformRouter);
 
 const PORT = process.env.PORT || 5000;
 
