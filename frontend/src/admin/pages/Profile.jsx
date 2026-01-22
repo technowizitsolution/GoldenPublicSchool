@@ -95,37 +95,37 @@ const Profile = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-3 sm:p-4 md:p-6 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Profile</h1>
-        <p className="text-gray-600">Manage your account and settings</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Admin Profile</h1>
+        <p className="text-sm sm:text-base text-gray-600">Manage your account and settings</p>
       </div>
 
       {/* Profile Card */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 sm:mb-8 overflow-hidden">
         {/* Cover Section */}
-        <div className="h-32 bg-[#C3EBFA]"></div>
+        <div className="h-24 sm:h-28 md:h-32 bg-[#C3EBFA]"></div>
 
         {/* Profile Header */}
-        <div className="px-8 pb-8">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 -mt-16 relative z-10 mb-8">
-            <div className="flex items-end gap-4">
-              <div className="w-32 h-32 bg-white rounded-lg shadow-lg border-4 border-white flex items-center justify-center">
-                <User className="w-20 h-20 text-[bg-[#C3EBFA]]" />
+        <div className="px-4 sm:px-6 md:px-8 pb-6 sm:pb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 sm:gap-6 -mt-12 sm:-mt-14 md:-mt-16 relative z-10 mb-6 sm:mb-8">
+            <div className="flex items-end gap-3 sm:gap-4">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-white rounded-lg shadow-lg border-4 border-white flex items-center justify-center flex-shrink-0">
+                <User className="w-10 h-10 sm:w-14 sm:h-14 md:w-20 md:h-20 text-gray-300" />
               </div>
-              <div className="pb-2">
-                <h2 className="text-3xl font-bold text-gray-900">
+              <div className="pb-1 sm:pb-2">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
                   {formData.firstName} {formData.lastName}
                 </h2>
-                <p className="text-gray-400 font-semibold">{formData.position}</p>
-                <p className="text-gray-600 text-sm">{formData.department}</p>
+                <p className="text-xs sm:text-sm md:text-base text-gray-400 font-semibold">{formData.position}</p>
+                <p className="text-xs sm:text-sm text-gray-600">{formData.department}</p>
               </div>
             </div>
 
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition ${
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition whitespace-nowrap flex-shrink-0 ${
                 isEditing
                   ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   : 'bg-[#C3EBFA] text-black hover:bg-[#a4e4fb]'
@@ -134,28 +134,29 @@ const Profile = () => {
               {isEditing ? (
                 <>
                   <X className="w-4 h-4" />
-                  Cancel
+                  <span className="hidden sm:inline">Cancel</span>
                 </>
               ) : (
                 <>
                   <Edit2 className="w-4 h-4" />
-                  Edit Profile
+                  <span className="hidden sm:inline">Edit Profile</span>
+                  <span className="sm:hidden">Edit</span>
                 </>
               )}
             </button>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 pt-8 border-t border-gray-200">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8 pt-6 sm:pt-8 border-t border-gray-200">
             {adminStats.map((stat, idx) => {
               const Icon = stat.icon;
               return (
                 <div key={idx} className="text-center">
-                  <div className={`w-12 h-12 rounded-lg ${stat.color} flex items-center justify-center mx-auto mb-2`}>
-                    <Icon className="w-6 h-6" />
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg ${stat.color} flex items-center justify-center mx-auto mb-2`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-600">{stat.label}</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900 break-words">{stat.value}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">{stat.label}</p>
                 </div>
               );
             })}
@@ -164,223 +165,224 @@ const Profile = () => {
       </div>
 
       {/* Profile Information */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
         {/* Main Profile Form */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h3>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 md:p-8">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Personal Information</h3>
 
             {!isEditing ? (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">First Name</label>
-                    <p className="text-gray-900 font-medium mt-2">{formData.firstName}</p>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600">First Name</label>
+                    <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2">{formData.firstName}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Last Name</label>
-                    <p className="text-gray-900 font-medium mt-2">{formData.lastName}</p>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600">Last Name</label>
+                    <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2">{formData.lastName}</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Email Address</label>
-                    <p className="text-gray-900 font-medium mt-2 flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-black" />
-                      {formData.email}
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600">Email Address</label>
+                    <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2 flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-black flex-shrink-0" />
+                      <span className="break-all">{formData.email}</span>
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Phone Number</label>
-                    <p className="text-gray-900 font-medium mt-2 flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-black" />
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600">Phone Number</label>
+                    <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2 flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-black flex-shrink-0" />
                       {formData.phone}
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Position</label>
-                    <p className="text-gray-900 font-medium mt-2">{formData.position}</p>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600">Position</label>
+                    <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2">{formData.position}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Department</label>
-                    <p className="text-gray-900 font-medium mt-2">{formData.department}</p>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600">Department</label>
+                    <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2">{formData.department}</p>
                   </div>
                 </div>
 
-                <div className="border-t pt-6">
-                  <h4 className="font-semibold text-gray-900 mb-4">Address</h4>
-                  <div className="space-y-4">
+                <div className="border-t pt-4 sm:pt-6">
+                  <h4 className="font-semibold text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base">Address</h4>
+                  <div className="space-y-3 sm:space-y-4">
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Street Address</label>
-                      <p className="text-gray-900 font-medium mt-2 flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-black" />
-                        {formData.address}
+                      <label className="text-xs sm:text-sm font-semibold text-gray-600">Street Address</label>
+                      <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2 flex items-start gap-2">
+                        <MapPin className="w-4 h-4 text-black flex-shrink-0 mt-0.5" />
+                        <span>{formData.address}</span>
                       </p>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                       <div>
-                        <label className="text-sm font-semibold text-gray-600">City</label>
-                        <p className="text-gray-900 font-medium mt-2">{formData.city}</p>
+                        <label className="text-xs sm:text-sm font-semibold text-gray-600">City</label>
+                        <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2">{formData.city}</p>
                       </div>
                       <div>
-                        <label className="text-sm font-semibold text-gray-600">State</label>
-                        <p className="text-gray-900 font-medium mt-2">{formData.state}</p>
+                        <label className="text-xs sm:text-sm font-semibold text-gray-600">State</label>
+                        <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2">{formData.state}</p>
                       </div>
                       <div>
-                        <label className="text-sm font-semibold text-gray-600">ZIP Code</label>
-                        <p className="text-gray-900 font-medium mt-2">{formData.zipCode}</p>
+                        <label className="text-xs sm:text-sm font-semibold text-gray-600">ZIP Code</label>
+                        <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2">{formData.zipCode}</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 border-t pt-4 sm:pt-6">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Join Date</label>
-                    <p className="text-gray-900 font-medium mt-2 flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-black" />
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600">Join Date</label>
+                    <p className="text-sm sm:text-base text-gray-900 font-medium mt-1 sm:mt-2 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-black flex-shrink-0" />
                       {new Date(formData.joinDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600 block mb-2">First Name</label>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">First Name</label>
                     <input
                       type="text"
                       name="firstName"
                       value={editedData.firstName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600 block mb-2">Last Name</label>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">Last Name</label>
                     <input
                       type="text"
                       name="lastName"
                       value={editedData.lastName}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600 block mb-2">Email Address</label>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">Email Address</label>
                     <input
                       type="email"
                       name="email"
                       value={editedData.email}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600 block mb-2">Phone Number</label>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">Phone Number</label>
                     <input
                       type="tel"
                       name="phone"
                       value={editedData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
-                    <label className="text-sm font-semibold text-gray-600 block mb-2">Position</label>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">Position</label>
                     <input
                       type="text"
                       name="position"
                       value={editedData.position}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600 block mb-2">Department</label>
+                    <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">Department</label>
                     <input
                       type="text"
                       name="department"
                       value={editedData.department}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                     />
                   </div>
                 </div>
 
-                <div className="border-t pt-6">
-                  <h4 className="font-semibold text-gray-900 mb-4">Address</h4>
-                  <div className="space-y-4">
+                <div className="border-t pt-4 sm:pt-6">
+                  <h4 className="font-semibold text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base">Address</h4>
+                  <div className="space-y-3 sm:space-y-4">
                     <div>
-                      <label className="text-sm font-semibold text-gray-600 block mb-2">Street Address</label>
+                      <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">Street Address</label>
                       <input
                         type="text"
                         name="address"
                         value={editedData.address}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                        className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                       />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                       <div>
-                        <label className="text-sm font-semibold text-gray-600 block mb-2">City</label>
+                        <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">City</label>
                         <input
                           type="text"
                           name="city"
                           value={editedData.city}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-semibold text-gray-600 block mb-2">State</label>
+                        <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">State</label>
                         <input
                           type="text"
                           name="state"
                           value={editedData.state}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-semibold text-gray-600 block mb-2">ZIP Code</label>
+                        <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">ZIP Code</label>
                         <input
                           type="text"
                           name="zipCode"
                           value={editedData.zipCode}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
+                          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#C3EBFA]"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-6 border-t">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-4 sm:pt-6 border-t">
                   <button
                     onClick={handleSaveProfile}
-                    className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+                    className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition text-sm"
                   >
                     <Save className="w-4 h-4" />
-                    Save Changes
+                    <span className="hidden sm:inline">Save Changes</span>
+                    <span className="sm:hidden">Save</span>
                   </button>
                   <button
                     onClick={handleCancel}
-                    className="flex items-center gap-2 px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition"
+                    className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition text-sm"
                   >
                     <X className="w-4 h-4" />
-                    Cancel
+                    <span className="hidden sm:inline">Cancel</span>
                   </button>
                 </div>
               </div>
@@ -391,33 +393,33 @@ const Profile = () => {
         {/* Right Sidebar */}
         <div className="space-y-6">
           {/* Change Password */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             {!showChangePassword ? (
               <>
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <Lock className="w-5 h-5 text-black" />
                   Security
                 </h3>
                 <button
                   onClick={() => setShowChangePassword(true)}
-                  className="w-full px-4 py-2 bg-[#C3EBFA] rounded-lg font-semibold hover:bg-[#a4e4fb] transition"
+                  className="w-full px-4 py-2 bg-[#C3EBFA] rounded-lg font-semibold hover:bg-[#a4e4fb] transition text-sm"
                 >
                   Change Password
                 </button>
               </>
             ) : (
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Change Password</h3>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4">Change Password</h3>
                 
                 <div>
-                  <label className="text-sm font-semibold text-gray-600 block mb-2">Current Password</label>
+                  <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">Current Password</label>
                   <div className="relative">
                     <input
                       type={showCurrentPassword ? 'text' : 'password'}
                       name="currentPassword"
                       value={passwordData.currentPassword}
                       onChange={handlePasswordChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10 text-sm"
                     />
                     <button
                       type="button"
@@ -430,14 +432,14 @@ const Profile = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-gray-600 block mb-2">New Password</label>
+                  <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">New Password</label>
                   <div className="relative">
                     <input
                       type={showNewPassword ? 'text' : 'password'}
                       name="newPassword"
                       value={passwordData.newPassword}
                       onChange={handlePasswordChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10 text-sm"
                     />
                     <button
                       type="button"
@@ -450,14 +452,14 @@ const Profile = () => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-gray-600 block mb-2">Confirm Password</label>
+                  <label className="text-xs sm:text-sm font-semibold text-gray-600 block mb-2">Confirm Password</label>
                   <div className="relative">
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       name="confirmPassword"
                       value={passwordData.confirmPassword}
                       onChange={handlePasswordChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10"
+                      className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C3EBFA] pr-10 text-sm"
                     />
                     <button
                       type="button"
@@ -469,16 +471,16 @@ const Profile = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2 pt-4">
+                <div className="flex flex-col sm:flex-row gap-2 pt-4">
                   <button
                     onClick={handleChangePassword}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition text-sm"
                   >
                     Update Password
                   </button>
                   <button
                     onClick={() => setShowChangePassword(false)}
-                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition"
+                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition text-sm"
                   >
                     Cancel
                   </button>
@@ -488,16 +490,16 @@ const Profile = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
             <div className="space-y-2">
-              <button className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-lg font-medium text-gray-700 transition">
+              <button className="w-full text-left px-3 sm:px-4 py-3 hover:bg-gray-50 rounded-lg font-medium text-gray-700 transition text-sm">
                 Download Profile
               </button>
-              <button className="w-full text-left px-4 py-3 hover:bg-gray-50 rounded-lg font-medium text-gray-700 transition">
+              <button className="w-full text-left px-3 sm:px-4 py-3 hover:bg-gray-50 rounded-lg font-medium text-gray-700 transition text-sm">
                 Export Data
               </button>
-              <button className="w-full text-left px-4 py-3 hover:bg-red-50 rounded-lg font-medium text-red-600 transition">
+              <button className="w-full text-left px-3 sm:px-4 py-3 hover:bg-red-50 rounded-lg font-medium text-red-600 transition text-sm">
                 Logout All Devices
               </button>
             </div>
@@ -506,22 +508,22 @@ const Profile = () => {
       </div>
 
       {/* Recent Activity and Login History */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         {/* Recent Activity */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h3>
-          <div className="space-y-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 md:p-8">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Recent Activity</h3>
+          <div className="space-y-3 sm:space-y-4">
             {recentActivity.map((activity, idx) => (
-              <div key={idx} className="flex items-start gap-4 pb-4 border-b border-gray-200 last:border-b-0">
-                <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+              <div key={idx} className="flex items-start gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-gray-200 last:border-b-0">
+                <div className={`w-2 h-2 rounded-full mt-1.5 sm:mt-2 flex-shrink-0 ${
                   activity.type === 'update' ? 'bg-blue-600' :
                   activity.type === 'add' ? 'bg-green-600' :
                   activity.type === 'approve' ? 'bg-purple-600' :
                   'bg-orange-600'
                 }`}></div>
-                <div className="flex-1">
-                  <p className="text-gray-900 font-medium">{activity.action}</p>
-                  <p className="text-gray-500 text-sm">{activity.time}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm sm:text-base text-gray-900 font-medium break-words">{activity.action}</p>
+                  <p className="text-xs sm:text-sm text-gray-500">{activity.time}</p>
                 </div>
               </div>
             ))}
@@ -529,17 +531,17 @@ const Profile = () => {
         </div>
 
         {/* Login History */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Login History</h3>
-          <div className="space-y-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 md:p-8">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Login History</h3>
+          <div className="space-y-3 sm:space-y-4">
             {loginHistory.map((login, idx) => (
-              <div key={idx} className="pb-4 border-b border-gray-200 last:border-b-0">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="text-gray-900 font-medium">{login.device}</p>
-                    <p className="text-gray-600 text-sm">{login.date} at {login.time}</p>
+              <div key={idx} className="pb-3 sm:pb-4 border-b border-gray-200 last:border-b-0">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+                  <div className="min-w-0">
+                    <p className="text-sm sm:text-base text-gray-900 font-medium break-words">{login.device}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">{login.date} at {login.time}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0 ${
                     login.status === 'Active'
                       ? 'bg-green-100 text-green-800'
                       : 'bg-gray-100 text-gray-800'
