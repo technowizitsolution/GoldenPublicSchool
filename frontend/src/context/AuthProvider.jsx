@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import AuthContext from './AuthContext';
 import axios from 'axios';
 
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "https://golden-public-school.vercel.app";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -19,8 +19,8 @@ const AuthProvider = ({ children }) => {
     try {
       // Different endpoints based on role
       const endpoint = {
-        admin: 'http://localhost:5000/adminLogin',
-        student: 'http://localhost:5000/studentLogin'
+        admin: 'https://golden-public-school.vercel.app/adminLogin',
+        student: 'https://golden-public-school.vercel.app/studentLogin'
       }[userRole];
 
       const response = await axios.post(endpoint,{email,password});
