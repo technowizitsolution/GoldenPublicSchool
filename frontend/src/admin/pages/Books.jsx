@@ -1,66 +1,164 @@
-import React, { useState } from 'react';
-import { Search, ChevronLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, ChevronLeft, Loader ,ArrowRight} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Books = () => {
   const [selectedClass, setSelectedClass] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [studentBookState, setStudentBookState] = useState({});
+  const [booksByClass, setBooksByClass] = useState({});
 
-  // Classes data
-  const classes = [
-    { id: 1, name: '9-A', students: 35, booksIssued: 32, booksPending: 3 },
-    { id: 2, name: '9-B', students: 32, booksIssued: 28, booksPending: 4 },
-    { id: 3, name: '9-C', students: 30, booksIssued: 30, booksPending: 0 },
-    { id: 4, name: '10-A', students: 38, booksIssued: 36, booksPending: 2 },
-    { id: 5, name: '10-B', students: 36, booksIssued: 34, booksPending: 2 },
-    { id: 6, name: '10-C', students: 34, booksIssued: 32, booksPending: 2 },
-  ];
+  // State for API data
+  const [classStats, setClassStats] = useState([]);
+  const [bookInventory, setBookInventory] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { axios, token } = useAuth();
 
-  // Book items inventory
-  const bookItems = [
-    { id: 1, name: 'Mathematics', subject: 'Math', totalStock: 150, issued: 132, damaged: 3 },
-    { id: 2, name: 'Science', subject: 'Science', totalStock: 150, issued: 138, damaged: 2 },
-    { id: 3, name: 'English', subject: 'English', totalStock: 150, issued: 145, damaged: 1 },
-    { id: 4, name: 'History', subject: 'Social Studies', totalStock: 120, issued: 95, damaged: 2 },
-    { id: 5, name: 'Geography', subject: 'Social Studies', totalStock: 120, issued: 108, damaged: 1 },
-    { id: 6, name: 'Physics', subject: 'Science', totalStock: 100, issued: 87, damaged: 2 },
-  ];
+  const navigate = useNavigate();
 
-  // Student books data by class
-  const studentBooksData = {
-    '9-A': [
-      { id: 1, name: 'Ahmed Ali', rollNo: '01', issuedBooks: ['Mathematics', 'Science'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 2, name: 'Sara Khan', rollNo: '02', issuedBooks: ['English'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 3, name: 'Hassan Shah', rollNo: '03', issuedBooks: [], status: 'pending', issueDate: null },
-      { id: 4, name: 'Fatima Malik', rollNo: '04', issuedBooks: ['Mathematics', 'English', 'Science'], status: 'issued', issueDate: '2025-12-01' },
-    ],
-    '9-B': [
-      { id: 5, name: 'Ali Hassan', rollNo: '01', issuedBooks: ['Science', 'History'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 6, name: 'Ayesha Ahmed', rollNo: '02', issuedBooks: ['Mathematics', 'English'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 7, name: 'Muhammad Khan', rollNo: '03', issuedBooks: ['Physics', 'Geography'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 8, name: 'Zainab Ali', rollNo: '04', issuedBooks: [], status: 'pending', issueDate: null },
-    ],
-    '9-C': [
-      { id: 9, name: 'Amina Khan', rollNo: '01', issuedBooks: ['Mathematics', 'Science'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 10, name: 'Omar Ali', rollNo: '02', issuedBooks: ['English', 'History'], status: 'issued', issueDate: '2025-12-01' },
-    ],
-    '10-A': [
-      { id: 11, name: 'Hira Khan', rollNo: '01', issuedBooks: ['Physics', 'Chemistry'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 12, name: 'Bilal Ahmed', rollNo: '02', issuedBooks: ['Mathematics'], status: 'issued', issueDate: '2025-12-01' },
-    ],
-    '10-B': [
-      { id: 13, name: 'Nadia Malik', rollNo: '01', issuedBooks: ['English', 'Geography'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 14, name: 'Hassan Khan', rollNo: '02', issuedBooks: [], status: 'pending', issueDate: null },
-    ],
-    '10-C': [
-      { id: 15, name: 'Fatima Khan', rollNo: '01', issuedBooks: ['Mathematics', 'Science', 'English'], status: 'issued', issueDate: '2025-12-01' },
-      { id: 16, name: 'Ahmed Hassan', rollNo: '02', issuedBooks: ['History'], status: 'issued', issueDate: '2025-12-01' },
-    ],
+
+
+  // Fetch class statistics
+  const fetchClassStats = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get('/admin/books/stats', {
+        headers: { token }
+      });
+      console.log("class stats data : ", data);
+      if (data.success) {
+        setClassStats(data.data);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch class statistics');
+      console.error('Error fetching class stats:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const getAllBooks = async () => {
+    try {
+      setLoading(true);
+
+      // Fetch all books from all classes
+      const response = await axios.get('/admin/books/all', {
+        headers: { token }
+      });
+      console.log(" all books data: ", response.data);
+      // Group books by className
+      const grouped = {};
+      const booksData = response.data.data || [];
+
+      booksData.forEach(book => {
+        const className = book.className;
+        if (!grouped[className]) {
+          grouped[className] = [];
+        }
+        grouped[className].push(book);
+      });
+
+      setBooksByClass(grouped);
+
+      console.log(" All books grouped by class: ", grouped);
+
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      if (error.response?.status === 404 || error.response?.status === 500) {
+        setBooksByClass({});
+      } else {
+        alert('Failed to load books');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch books for selected class
+  const fetchBooksForClass = (className) => {
+
+    const books = booksByClass[className] || [];
+    setBookInventory(books);
+    console.log(`Books for class ${className}: `, books);
+  };
+
+  // Fetch students for selected class
+  const fetchStudentsForClass = async (className) => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(`/admin/students/by-class/${className}`, {
+        headers: { token }
+      });
+
+      console.log("students data for selected class : ", data);
+
+      if (data.success) {
+        // Fetch issued books for each student
+        const studentsWithBooks = await Promise.all(
+          data.students.map(async (student) => {
+            try {
+              const bookData = await axios.get(
+                `/admin/books/student/${student._id}`,
+                { headers: { token } }
+              );
+
+              const issuedBooks = bookData.data.success
+                ? bookData.data.data.filter(b => b.status === 'issued').map(b => b.bookName)
+                : [];
+
+              return {
+                id: student._id,
+                name: student.username,
+                rollNo: student.studentId,
+                issuedBooks,
+                status: issuedBooks.length > 0 ? 'issued' : 'pending',
+                issueDate: issuedBooks.length > 0 ? bookData.data.data[0]?.issueDate : null,
+              };
+            } catch {
+              return {
+                id: student._id,
+                name: student.name,
+                rollNo: student.rollNo,
+                issuedBooks: [],
+                status: 'pending',
+                issueDate: null,
+              };
+            }
+          })
+        );
+        console.log("students with books: ", studentsWithBooks);
+        setStudents(studentsWithBooks);
+      }
+
+
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch students');
+      console.error('Error fetching students:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial load - fetch class stats
+  useEffect(() => {
+    fetchClassStats();
+    getAllBooks();
+  }, []);
+
+  // When class is selected, fetch books and students
+  useEffect(() => {
+    if (selectedClass) {
+      fetchBooksForClass(selectedClass);
+      fetchStudentsForClass(selectedClass);
+    }
+  }, [selectedClass]);
+
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case 'issued':
         return 'bg-green-100 text-green-800';
       case 'pending':
@@ -74,40 +172,94 @@ const Books = () => {
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
-  const handleBookToggle = (studentId, bookName) => {
-    const key = `${studentId}-${bookName}`;
+  const handleBookToggle = (studentId, bookId) => {
+    const key = `${studentId}-${bookId}`;
     setStudentBookState(prev => ({
       ...prev,
       [key]: !prev[key]
     }));
   };
 
-  const handleIssueBooks = (studentId, studentName) => {
-    const selectedBooks = bookItems.filter(book => 
-      studentBookState[`${studentId}-${book.name}`]
-    );
-    
-    if (selectedBooks.length === 0) {
-      alert('Please select at least one book');
-      return;
+  const handleIssueBooks = async (studentId, studentName) => {
+    try {
+      // Get selected book IDs for this student
+      const selectedBookIds = bookInventory
+        .filter(book => studentBookState[`${studentId}-${book._id}`])
+        .map(book => book._id);
+
+      console.log("selected book ids to issue: ", selectedBookIds);
+
+      if (selectedBookIds.length === 0) {
+        alert('Please select at least one book');
+        return;
+      }
+
+      setLoading(true);
+      const { data } = await axios.post(
+        `/admin/books/issue`,
+        {
+          studentId,
+          bookIds: selectedBookIds,
+          className: selectedClass,
+        },
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        alert(`Books issued successfully to ${studentName}: ${data.data.map(b => b.bookName).join(', ')}`);
+
+        // Reset checkboxes for this student
+        const newState = { ...studentBookState };
+        bookInventory.forEach(book => {
+          delete newState[`${studentId}-${book._id}`];
+        });
+        setStudentBookState(newState);
+
+        // Refresh data
+        fetchBooksForClass(selectedClass);
+        fetchStudentsForClass(selectedClass);
+      } else {
+        alert(data.message || 'Failed to issue books');
+      }
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || 'Failed to issue books';
+      alert(errorMsg);
+      console.error('Error issuing books:', err);
+    } finally {
+      setLoading(false);
     }
-    
-    console.log(`Issuing books to ${studentName}:`, selectedBooks.map(b => b.name));
-    alert(`Books issued successfully to ${studentName}: ${selectedBooks.map(b => b.name).join(', ')}`);
-    
-    // Reset checkboxes for this student
-    const newState = { ...studentBookState };
-    bookItems.forEach(book => {
-      delete newState[`${studentId}-${book.name}`];
-    });
-    setStudentBookState(newState);
   };
+
+  // Loading state
+  if (loading && !selectedClass && classStats.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && classStats.length === 0) {
+    return (
+      <div className="p-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   // CLASS VIEW
   if (!selectedClass) {
-    const totalStudents = classes.reduce((sum, c) => sum + c.students, 0);
-    const totalIssued = classes.reduce((sum, c) => sum + c.booksIssued, 0);
-    const totalPending = classes.reduce((sum, c) => sum + c.booksPending, 0);
+    // Calculate totals from class stats
+    const totalStudentsFromStats = classStats.reduce((sum, c) => {
+      // Fetch student count from API or use a placeholder
+      return sum + (c.totalBooks || 0);
+    }, 0);
+
+    const totalIssued = classStats.reduce((sum, c) => sum + (c.issuedBooks || 0), 0);
+    const totalAvailable = classStats.reduce((sum, c) => sum + (c.availableBooks || 0), 0);
 
     return (
       <div className="p-6 bg-gray-50 min-h-screen">
@@ -120,41 +272,58 @@ const Books = () => {
         {/* Overall Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-            <p className="text-gray-600 text-sm font-medium mb-2">Total Students</p>
-            <p className="text-3xl font-bold text-gray-900">{totalStudents}</p>
+            <p className="text-gray-600 text-sm font-medium mb-2">Total Books</p>
+            <p className="text-3xl font-bold text-gray-900">{totalStudentsFromStats}</p>
             <p className="text-gray-500 text-xs mt-2">Across all classes</p>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
             <p className="text-gray-600 text-sm font-medium mb-2">Books Issued</p>
             <p className="text-3xl font-bold text-green-600">{totalIssued}</p>
-            <p className="text-gray-500 text-xs mt-2">{((totalIssued / totalStudents) * 100).toFixed(1)}% issued</p>
+            <p className="text-gray-500 text-xs mt-2">Currently distributed</p>
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
-            <p className="text-gray-600 text-sm font-medium mb-2">Pending</p>
-            <p className="text-3xl font-bold text-yellow-600">{totalPending}</p>
-            <p className="text-gray-500 text-xs mt-2">Awaiting distribution</p>
+            <p className="text-gray-600 text-sm font-medium mb-2">Available</p>
+            <p className="text-3xl font-bold text-yellow-600">{totalAvailable}</p>
+            <p className="text-gray-500 text-xs mt-2">Ready to distribute</p>
           </div>
         </div>
 
         {/* Classes Grid */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Books by Class</h2>
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              Books by Class
+            </h2>
+
+            <button
+              onClick={() => navigate("/admin/books/inventory")}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 
+                         bg-blue-600 text-white rounded-md 
+                         hover:bg-blue-700 transition 
+                         text-[11px] sm:text-xs font-medium"
+            >
+              Manage
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {classes.map((classItem) => {
-              const issuedPercentage = ((classItem.booksIssued / classItem.students) * 100).toFixed(1);
+            {classStats.map((classItem, index) => {
+              const issuedPercentage = classItem.totalBooks > 0
+                ? ((classItem.issuedBooks / classItem.totalBooks) * 100).toFixed(1)
+                : 0;
 
               return (
                 <div
-                  key={classItem.id}
-                  onClick={() => setSelectedClass(classItem.name)}
+                  key={index}
+                  onClick={() => setSelectedClass(classItem._id)}
                   className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer border border-gray-200 hover:border-blue-500"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900">{classItem.name}</h3>
-                      <p className="text-gray-600 text-sm">{classItem.students} Students</p>
+                      <h3 className="text-2xl font-bold text-gray-900">{classItem._id}</h3>
+                      <p className="text-gray-600 text-sm">{classItem.totalBooks} Books</p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-blue-600">{issuedPercentage}%</div>
@@ -174,11 +343,11 @@ const Books = () => {
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <p className="text-gray-600 text-xs mb-1">Issued</p>
-                      <p className="font-bold text-blue-600">{classItem.booksIssued}</p>
+                      <p className="font-bold text-blue-600">{classItem.issuedBooks}</p>
                     </div>
                     <div>
-                      <p className="text-gray-600 text-xs mb-1">Pending</p>
-                      <p className="font-bold text-yellow-600">{classItem.booksPending}</p>
+                      <p className="text-gray-600 text-xs mb-1">Available</p>
+                      <p className="font-bold text-green-600">{classItem.availableBooks}</p>
                     </div>
                   </div>
 
@@ -195,17 +364,15 @@ const Books = () => {
   }
 
   // STUDENT BOOKS VIEW
-  const studentsInClass = studentBooksData[selectedClass] || [];
-
-  const filteredData = studentsInClass.filter(student => {
+  const filteredData = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.rollNo.includes(searchTerm);
     const matchesStatus = filterStatus === 'all' || student.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
-  const classBooksIssued = studentsInClass.filter(s => s.status === 'issued').length;
-  const classBooksPending = studentsInClass.filter(s => s.status === 'pending').length;
+  const classBooksIssued = students.filter(s => s.status === 'issued').length;
+  const classBooksPending = students.filter(s => s.status === 'pending').length;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -216,6 +383,8 @@ const Books = () => {
             setSelectedClass(null);
             setSearchTerm('');
             setFilterStatus('all');
+            setStudents([]);
+            setBookInventory([]);
           }}
           className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4 font-medium"
         >
@@ -224,21 +393,23 @@ const Books = () => {
         </button>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Class {selectedClass} - Book Distribution</h1>
-        <p className="text-gray-600">{studentsInClass.length} students in this class</p>
+        <p className="text-gray-600">{students.length} students in this class</p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
           <p className="text-gray-600 text-sm font-medium mb-2">Total Students</p>
-          <p className="text-3xl font-bold text-gray-900">{studentsInClass.length}</p>
+          <p className="text-3xl font-bold text-gray-900">{students.length}</p>
           <p className="text-gray-500 text-xs mt-2">In this class</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
           <p className="text-gray-600 text-sm font-medium mb-2">Books Issued</p>
           <p className="text-3xl font-bold text-green-600">{classBooksIssued}</p>
-          <p className="text-gray-500 text-xs mt-2">{((classBooksIssued / studentsInClass.length) * 100).toFixed(1)}% distributed</p>
+          <p className="text-gray-500 text-xs mt-2">
+            {students.length > 0 ? ((classBooksIssued / students.length) * 100).toFixed(1) : 0}% distributed
+          </p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
@@ -267,11 +438,10 @@ const Books = () => {
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
-                  filterStatus === status
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium transition ${filterStatus === status
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
               </button>
@@ -280,9 +450,16 @@ const Books = () => {
         </div>
       </div>
 
+      {/* Loading state */}
+      {loading && (
+        <div className="flex justify-center py-8">
+          <Loader className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      )}
+
       {/* Students and Books */}
       <div className="space-y-6">
-        {filteredData.length > 0 ? (
+        {!loading && filteredData.length > 0 ? (
           filteredData.map((student) => (
             <div key={student.id} className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
               {/* Student Header */}
@@ -322,34 +499,40 @@ const Books = () => {
               <div className="p-6">
                 <h4 className="font-semibold text-gray-900 mb-4">Issue Books</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-                  {bookItems.map((book) => {
+                  {bookInventory.map((book) => {
                     const isAlreadyIssued = student.issuedBooks.includes(book.name);
-                    const isSelected = studentBookState[`${student.id}-${book.name}`];
+                    const isSelected = studentBookState[`${student.id}-${book._id}`];
+                    const outOfStock = book.availableStock <= 0;
 
                     return (
                       <label
-                        key={book.id}
-                        className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition ${
-                          isSelected
-                            ? 'border-blue-500 bg-blue-50'
-                            : isAlreadyIssued
+                        key={book._id}
+                        className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition ${isSelected
+                          ? 'border-blue-500 bg-blue-50'
+                          : isAlreadyIssued || outOfStock
                             ? 'border-gray-300 bg-gray-50 opacity-60 cursor-not-allowed'
                             : 'border-gray-200 hover:border-blue-300 bg-white'
-                        }`}
+                          }`}
                       >
                         <input
                           type="checkbox"
                           checked={isSelected || false}
-                          onChange={() => handleBookToggle(student.id, book.name)}
-                          disabled={isAlreadyIssued}
+                          onChange={() => handleBookToggle(student.id, book._id)}
+                          disabled={isAlreadyIssued || outOfStock}
                           className="w-4 h-4 cursor-pointer accent-blue-600"
                         />
                         <div className="ml-3 flex-1">
                           <p className="text-sm font-medium text-gray-900">{book.name}</p>
                           <p className="text-xs text-gray-600">{book.subject}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Available: {book.availableStock}/{book.totalStock}
+                          </p>
                         </div>
                         {isAlreadyIssued && (
                           <span className="text-xs text-gray-500 font-medium">Issued</span>
+                        )}
+                        {outOfStock && !isAlreadyIssued && (
+                          <span className="text-xs text-red-500 font-medium">Out of Stock</span>
                         )}
                       </label>
                     );
@@ -358,26 +541,30 @@ const Books = () => {
 
                 <button
                   onClick={() => handleIssueBooks(student.id, student.name)}
-                  className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+                  disabled={loading}
+                  className="w-full md:w-auto bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-6 rounded-lg transition flex items-center gap-2"
                 >
+                  {loading && <Loader className="w-4 h-4 animate-spin" />}
                   Issue Selected Books
                 </button>
               </div>
             </div>
           ))
-        ) : (
+        ) : !loading ? (
           <div className="bg-white p-12 rounded-lg shadow-sm text-center border border-gray-200">
             <p className="text-gray-500 text-lg">No students found matching your search criteria.</p>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Summary Footer */}
-      <div className="mt-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <p className="text-sm text-gray-600">
-          Showing <span className="font-semibold">{filteredData.length}</span> of <span className="font-semibold">{studentsInClass.length}</span> students
-        </p>
-      </div>
+      {!loading && filteredData.length > 0 && (
+        <div className="mt-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <p className="text-sm text-gray-600">
+            Showing <span className="font-semibold">{filteredData.length}</span> of <span className="font-semibold">{students.length}</span> students
+          </p>
+        </div>
+      )}
     </div>
   );
 };

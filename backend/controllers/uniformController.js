@@ -495,8 +495,6 @@ export const getAllClassesUniformSummary = async (req, res) => {
     try {
         const classes = await Class.find({ status: { $ne: "DELETED" } });
 
-        console.log('Classes Found:', classes);
-
         const settled = await Promise.allSettled(
             classes.map(async (classItem) => {
                 const classId = classItem._id;

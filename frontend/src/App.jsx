@@ -21,6 +21,7 @@ import ClassDetails from "./admin/pages/ClassDetails";
 import TeacherProfile from './admin/pages/TeacherProfile';
 import Settings  from './admin/pages/Settings'
 import UniformInventory from './admin/pages/UniformInventory';
+import BookInventory from './admin/pages/BookInventory';
 
 
 
@@ -55,6 +56,7 @@ const App = () => {
           <Route path="/admin/teacher/:id" element={<TeacherProfile />}/>
           <Route path="/admin/settings" element={<Settings />}/>
           <Route path="/admin/uniforms/inventory" element={<UniformInventory />} />
+          <Route path='/admin/books/inventory' element={<BookInventory />}/>
         </Route>
 
         {/* Student Routes - Protected */}

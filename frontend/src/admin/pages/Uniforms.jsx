@@ -5,9 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   ClassCardShimmer,
-  SummaryCardsShimmer,
-  StudentTableShimmer,
-  StudentCardsShimmer
 } from '../components/ShimmerLoader';
 
 const Uniforms = () => {
@@ -360,7 +357,7 @@ const Uniforms = () => {
                hover:bg-blue-700 transition 
                text-[11px] sm:text-xs font-medium"
             >
-              View All
+              Manage
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
