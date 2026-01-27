@@ -242,8 +242,8 @@ const Books = () => {
   // Error state
   if (error && classStats.length === 0) {
     return (
-      <div className="p-6">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+      <div className="p-3 sm:p-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-3 rounded text-sm sm:text-base">
           {error}
         </div>
       </div>
@@ -262,53 +262,53 @@ const Books = () => {
     const totalAvailable = classStats.reduce((sum, c) => sum + (c.availableBooks || 0), 0);
 
     return (
-      <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="p-3 sm:p-4 md:p-6 bg-gray-50 min-h-screen">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Books Management</h1>
-          <p className="text-gray-600">Track and manage student books by class</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Books Management</h1>
+          <p className="text-sm sm:text-base text-gray-600">Track and manage student books by class</p>
         </div>
 
         {/* Overall Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-            <p className="text-gray-600 text-sm font-medium mb-2">Total Books</p>
-            <p className="text-3xl font-bold text-gray-900">{totalStudentsFromStats}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Books</p>
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900">{totalStudentsFromStats}</p>
             <p className="text-gray-500 text-xs mt-2">Across all classes</p>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-            <p className="text-gray-600 text-sm font-medium mb-2">Books Issued</p>
-            <p className="text-3xl font-bold text-green-600">{totalIssued}</p>
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-l-4 border-green-500">
+            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Books Issued</p>
+            <p className="text-2xl sm:text-3xl font-bold text-green-600">{totalIssued}</p>
             <p className="text-gray-500 text-xs mt-2">Currently distributed</p>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
-            <p className="text-gray-600 text-sm font-medium mb-2">Available</p>
-            <p className="text-3xl font-bold text-yellow-600">{totalAvailable}</p>
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
+            <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Available</p>
+            <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{totalAvailable}</p>
             <p className="text-gray-500 text-xs mt-2">Ready to distribute</p>
           </div>
         </div>
 
         {/* Classes Grid */}
         <div>
-          <div className="flex items-center justify-between mb-3 md:mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 sm:mb-6">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
               Books by Class
             </h2>
 
             <button
               onClick={() => navigate("/admin/books/inventory")}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 
+              className="flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5
                          bg-blue-600 text-white rounded-md 
-                         hover:bg-blue-700 transition 
-                         text-[11px] sm:text-xs font-medium"
+                         hover:bg-blue-700 transition active:bg-blue-800
+                         text-xs sm:text-sm font-medium w-full sm:w-auto justify-center sm:justify-start"
             >
               Manage
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {classStats.map((classItem, index) => {
               const issuedPercentage = classItem.totalBooks > 0
                 ? ((classItem.issuedBooks / classItem.totalBooks) * 100).toFixed(1)
@@ -318,15 +318,15 @@ const Books = () => {
                 <div
                   key={index}
                   onClick={() => setSelectedClass(classItem._id)}
-                  className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer border border-gray-200 hover:border-blue-500"
+                  className="bg-white p-4 sm:p-6 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer border border-gray-200 hover:border-blue-500 active:shadow-lg"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-2xl font-bold text-gray-900">{classItem._id}</h3>
-                      <p className="text-gray-600 text-sm">{classItem.totalBooks} Books</p>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-start sm:justify-between gap-3 sm:gap-4 mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{classItem._id}</h3>
+                      <p className="text-gray-600 text-xs sm:text-sm">{classItem.totalBooks} Books</p>
                     </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-blue-600">{issuedPercentage}%</div>
+                    <div className="text-left sm:text-right">
+                      <div className="text-xl sm:text-2xl font-bold text-blue-600">{issuedPercentage}%</div>
                       <p className="text-gray-500 text-xs">Distributed</p>
                     </div>
                   </div>
@@ -340,18 +340,18 @@ const Books = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
                     <div>
                       <p className="text-gray-600 text-xs mb-1">Issued</p>
-                      <p className="font-bold text-blue-600">{classItem.issuedBooks}</p>
+                      <p className="font-bold text-sm sm:text-base text-blue-600">{classItem.issuedBooks}</p>
                     </div>
                     <div>
                       <p className="text-gray-600 text-xs mb-1">Available</p>
-                      <p className="font-bold text-green-600">{classItem.availableBooks}</p>
+                      <p className="font-bold text-sm sm:text-base text-green-600">{classItem.availableBooks}</p>
                     </div>
                   </div>
 
-                  <button className="w-full py-2 bg-blue-50 text-blue-600 rounded-lg font-medium hover:bg-blue-100 transition">
+                  <button className="w-full py-2 bg-blue-50 text-blue-600 rounded-lg text-sm sm:text-base font-medium hover:bg-blue-100 active:bg-blue-200 transition">
                     View Details →
                   </button>
                 </div>
@@ -375,9 +375,9 @@ const Books = () => {
   const classBooksPending = students.filter(s => s.status === 'pending').length;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-3 sm:p-4 md:p-6 bg-gray-50 min-h-screen">
       {/* Header with Back Button */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <button
           onClick={() => {
             setSelectedClass(null);
@@ -386,61 +386,61 @@ const Books = () => {
             setStudents([]);
             setBookInventory([]);
           }}
-          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4 font-medium"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-800 active:text-blue-900 mb-3 sm:mb-4 font-medium text-sm sm:text-base transition"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           Back to Classes
         </button>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Class {selectedClass} - Book Distribution</h1>
-        <p className="text-gray-600">{students.length} students in this class</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Class {selectedClass}</h1>
+        <p className="text-xs sm:text-base text-gray-600">Book Distribution • {students.length} students</p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
-          <p className="text-gray-600 text-sm font-medium mb-2">Total Students</p>
-          <p className="text-3xl font-bold text-gray-900">{students.length}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+          <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Students</p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{students.length}</p>
           <p className="text-gray-500 text-xs mt-2">In this class</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-green-500">
-          <p className="text-gray-600 text-sm font-medium mb-2">Books Issued</p>
-          <p className="text-3xl font-bold text-green-600">{classBooksIssued}</p>
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-l-4 border-green-500">
+          <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Books Issued</p>
+          <p className="text-2xl sm:text-3xl font-bold text-green-600">{classBooksIssued}</p>
           <p className="text-gray-500 text-xs mt-2">
             {students.length > 0 ? ((classBooksIssued / students.length) * 100).toFixed(1) : 0}% distributed
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
-          <p className="text-gray-600 text-sm font-medium mb-2">Pending</p>
-          <p className="text-3xl font-bold text-yellow-600">{classBooksPending}</p>
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border-l-4 border-yellow-500">
+          <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Pending</p>
+          <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{classBooksPending}</p>
           <p className="text-gray-500 text-xs mt-2">Awaiting distribution</p>
         </div>
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white p-3 sm:p-6 rounded-lg shadow-sm mb-6">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-2.5 sm:top-3 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
             <input
               type="text"
-              placeholder="Search by student name or roll number..."
+              placeholder="Search by name or roll..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {['all', 'issued', 'pending'].map(status => (
               <button
                 key={status}
                 onClick={() => setFilterStatus(status)}
-                className={`px-4 py-2 rounded-lg font-medium transition ${filterStatus === status
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition text-xs sm:text-sm ${filterStatus === status
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300 active:bg-gray-400'
                   }`}
               >
                 {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -452,53 +452,55 @@ const Books = () => {
 
       {/* Loading state */}
       {loading && (
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center py-8 sm:py-12">
           <Loader className="w-8 h-8 animate-spin text-blue-600" />
         </div>
       )}
 
       {/* Students and Books */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {!loading && filteredData.length > 0 ? (
           filteredData.map((student) => (
             <div key={student.id} className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
               {/* Student Header */}
-              <div className="bg-gray-50 p-6 border-b border-gray-200">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">{student.name}</h3>
-                    <p className="text-gray-600 text-sm">Roll No: {student.rollNo}</p>
-                  </div>
-                  <div className="flex flex-col items-start md:items-end gap-2">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(student.status)}`}>
-                      {getStatusLabel(student.status)}
-                    </span>
-                    {student.issuedBooks.length > 0 && (
-                      <p className="text-xs text-gray-600">
-                        <span className="font-semibold">{student.issuedBooks.length}</span> books issued
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {student.issuedBooks.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-xs font-semibold text-gray-600 mb-2">Currently Issued:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {student.issuedBooks.map((book, idx) => (
-                        <span key={idx} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                          {book}
-                        </span>
-                      ))}
+              <div className="bg-gray-50 p-3 sm:p-6 border-b border-gray-200">
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex-1">
+                      <h3 className="text-base sm:text-lg font-bold text-gray-900">{student.name}</h3>
+                      <p className="text-gray-600 text-xs sm:text-sm">Roll No: {student.rollNo}</p>
+                    </div>
+                    <div className="flex flex-col items-start gap-2">
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(student.status)}`}>
+                        {getStatusLabel(student.status)}
+                      </span>
+                      {student.issuedBooks.length > 0 && (
+                        <p className="text-xs text-gray-600">
+                          <span className="font-semibold">{student.issuedBooks.length}</span> books issued
+                        </p>
+                      )}
                     </div>
                   </div>
-                )}
+
+                  {student.issuedBooks.length > 0 && (
+                    <div className="pt-3 border-t border-gray-200">
+                      <p className="text-xs font-semibold text-gray-600 mb-2">Currently Issued:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {student.issuedBooks.map((book, idx) => (
+                          <span key={idx} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                            {book}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Books Selection */}
-              <div className="p-6">
-                <h4 className="font-semibold text-gray-900 mb-4">Issue Books</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+              <div className="p-3 sm:p-6">
+                <h4 className="font-semibold text-sm sm:text-base text-gray-900 mb-3 sm:mb-4">Issue Books</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
                   {bookInventory.map((book) => {
                     const isAlreadyIssued = student.issuedBooks.includes(book.name);
                     const isSelected = studentBookState[`${student.id}-${book._id}`];
@@ -507,11 +509,11 @@ const Books = () => {
                     return (
                       <label
                         key={book._id}
-                        className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition ${isSelected
+                        className={`flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition ${isSelected
                           ? 'border-blue-500 bg-blue-50'
                           : isAlreadyIssued || outOfStock
                             ? 'border-gray-300 bg-gray-50 opacity-60 cursor-not-allowed'
-                            : 'border-gray-200 hover:border-blue-300 bg-white'
+                            : 'border-gray-200 hover:border-blue-300 bg-white active:border-blue-500'
                           }`}
                       >
                         <input
@@ -519,21 +521,23 @@ const Books = () => {
                           checked={isSelected || false}
                           onChange={() => handleBookToggle(student.id, book._id)}
                           disabled={isAlreadyIssued || outOfStock}
-                          className="w-4 h-4 cursor-pointer accent-blue-600"
+                          className="w-4 h-4 cursor-pointer accent-blue-600 mt-0.5 sm:mt-0 flex-shrink-0"
                         />
-                        <div className="ml-3 flex-1">
-                          <p className="text-sm font-medium text-gray-900">{book.name}</p>
-                          <p className="text-xs text-gray-600">{book.subject}</p>
+                        <div className="ml-2 sm:ml-3 flex-1 min-w-0">
+                          <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">{book.name}</p>
+                          <p className="text-xs text-gray-600 truncate">{book.subject}</p>
                           <p className="text-xs text-gray-500 mt-1">
                             Available: {book.availableStock}/{book.totalStock}
                           </p>
                         </div>
-                        {isAlreadyIssued && (
-                          <span className="text-xs text-gray-500 font-medium">Issued</span>
-                        )}
-                        {outOfStock && !isAlreadyIssued && (
-                          <span className="text-xs text-red-500 font-medium">Out of Stock</span>
-                        )}
+                        <div className="text-right ml-2 flex-shrink-0">
+                          {isAlreadyIssued && (
+                            <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Issued</span>
+                          )}
+                          {outOfStock && !isAlreadyIssued && (
+                            <span className="text-xs text-red-500 font-medium whitespace-nowrap">Out</span>
+                          )}
+                        </div>
                       </label>
                     );
                   })}
@@ -542,7 +546,7 @@ const Books = () => {
                 <button
                   onClick={() => handleIssueBooks(student.id, student.name)}
                   disabled={loading}
-                  className="w-full md:w-auto bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-6 rounded-lg transition flex items-center gap-2"
+                  className="w-full sm:w-auto bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 sm:px-6 rounded-lg transition flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base"
                 >
                   {loading && <Loader className="w-4 h-4 animate-spin" />}
                   Issue Selected Books
@@ -551,16 +555,16 @@ const Books = () => {
             </div>
           ))
         ) : !loading ? (
-          <div className="bg-white p-12 rounded-lg shadow-sm text-center border border-gray-200">
-            <p className="text-gray-500 text-lg">No students found matching your search criteria.</p>
+          <div className="bg-white p-8 sm:p-12 rounded-lg shadow-sm text-center border border-gray-200">
+            <p className="text-gray-500 text-base sm:text-lg">No students found matching your search criteria.</p>
           </div>
         ) : null}
       </div>
 
       {/* Summary Footer */}
       {!loading && filteredData.length > 0 && (
-        <div className="mt-6 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <p className="text-sm text-gray-600">
+        <div className="mt-6 bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
+          <p className="text-xs sm:text-sm text-gray-600">
             Showing <span className="font-semibold">{filteredData.length}</span> of <span className="font-semibold">{students.length}</span> students
           </p>
         </div>
