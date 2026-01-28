@@ -10,6 +10,9 @@ import adminClassRouter from './routes/admin/adminClassRoute.js';
 import adminUniformRouter from './routes/admin/adminUniformRoutes.js';
 import adminBooksRouter from './routes/admin/adminBooksRoute.js';
 
+import studentLoginRouter from './routes/student/studentLoginRoute.js';
+import studentRouter from './routes/student/studentRoutes.js';
+
 const app = express();
 
 app.use(cors());
@@ -25,9 +28,11 @@ app.get('/', (req,res) => {
 app.use('/admin',adminStudentRouter);
 app.use('/admin',adminTeacherRouter);
 app.use('/',adminLoginRouter);
+app.use('/',studentLoginRouter);
 app.use('/admin',adminClassRouter);
 app.use('/admin/uniforms',adminUniformRouter);
 app.use('/admin/books',adminBooksRouter);
+app.use('/student',studentRouter);
 
 const PORT = process.env.PORT || 5000;
 

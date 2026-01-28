@@ -24,6 +24,15 @@ import UniformInventory from './admin/pages/UniformInventory';
 import BookInventory from './admin/pages/BookInventory';
 
 
+// Student Components
+import Student from './student/Student';
+import StudentHome from './student/pages/Home';
+import SProfile from './student/pages/SProfile';
+import SFees from './student/pages/SFees';
+import SBooks from './student/pages/SBooks';
+import SUniforms from './student/pages/SUniforms';
+import SAnnouncements from './student/pages/SAnnouncements';
+import SMessages from './student/pages/SMessages';
 
 const App = () => {
   return (
@@ -64,11 +73,17 @@ const App = () => {
           path="student"
           element={
             <RoleProtectedRoute requiredRole="student">
-              
+              <Student />
             </RoleProtectedRoute>
           }
         >
-          
+          <Route index element={<StudentHome />} />
+          <Route path="/student/profile" element={<SProfile />} />
+          <Route path="/student/fees" element={<SFees />} />
+          <Route path="/student/books" element={<SBooks />} />
+          <Route path="/student/uniforms" element={<SUniforms />} />
+          <Route path="/student/announcements" element={<SAnnouncements />} />
+          <Route path="/student/messages" element={<SMessages />} />
         </Route>
 
         
