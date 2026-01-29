@@ -5,16 +5,20 @@ import { useAuth } from '../../context/AuthContext';
 
 const AnnouncementsModal = ({ onClose }) => {
     const [showForm, setShowForm] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { token, axios } = useAuth();
     const [announcements, setAnnouncements] = useState([]);
 
     const getAllAnnouncements = async () => {
         try {
+            setLoading(true);
             const response = await axios.get('/admin/announcements', { headers: { token } });
             console.log("Announcements fetched : ", response.data.announcements);
             setAnnouncements(response.data.announcements);
         } catch (error) {
             console.error("Error fetching announcements : ", error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -61,32 +65,40 @@ const AnnouncementsModal = ({ onClose }) => {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">
-                    {!showForm ? (
-                        <>
-                            <button
-                                onClick={() => setShowForm(true)}
-                                className="mb-4 sm:mb-6 w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base"
-                            >
-                                + Create New Announcement
-                            </button>
-                            <AnnouncementsList
-                                announcements={announcements}
-                                onDelete={handleDeleteAnnouncement}
-                            />
-                        </>
+                <div className="flex-1 scrollbar-hidden overflow-y-auto p-3 sm:p-4 md:p-6">
+                    {loading ? (
+                        <div className="flex justify-center items-center h-40">
+                            <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-blue-500"></div>
+                        </div>
                     ) : (
                         <>
-                            <button
-                                onClick={() => setShowForm(false)}
-                                className="mb-3 sm:mb-4 text-purple-500 hover:text-purple-700 font-semibold text-sm sm:text-base"
-                            >
-                                ← Back to Announcements
-                            </button>
-                            <AnnouncementForm
-                                onSubmit={handleAddAnnouncement}
-                                onCancel={() => setShowForm(false)}
-                            />
+                            {!showForm ? (
+                                <>
+                                    <button
+                                        onClick={() => setShowForm(true)}
+                                        className="mb-4 sm:mb-6 w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base"
+                                    >
+                                        + Create New Announcement
+                                    </button>
+                                    <AnnouncementsList
+                                        announcements={announcements}
+                                        onDelete={handleDeleteAnnouncement}
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        onClick={() => setShowForm(false)}
+                                        className="mb-3 sm:mb-4 text-purple-500 hover:text-purple-700 font-semibold text-sm sm:text-base"
+                                    >
+                                        ← Back to Announcements
+                                    </button>
+                                    <AnnouncementForm
+                                        onSubmit={handleAddAnnouncement}
+                                        onCancel={() => setShowForm(false)}
+                                    />
+                                </>
+                            )}
                         </>
                     )}
                 </div>
