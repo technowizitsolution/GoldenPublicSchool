@@ -32,7 +32,7 @@ import SFees from './student/pages/SFees';
 import SBooks from './student/pages/SBooks';
 import SUniforms from './student/pages/SUniforms';
 import SAnnouncements from './student/pages/SAnnouncements';
-import SMessages from './student/pages/SMessages';
+import SSettings from './student/pages/SSettings';
 
 const App = () => {
   return (
@@ -83,7 +83,7 @@ const App = () => {
           <Route path="/student/books" element={<SBooks />} />
           <Route path="/student/uniforms" element={<SUniforms />} />
           <Route path="/student/announcements" element={<SAnnouncements />} />
-          <Route path="/student/messages" element={<SMessages />} />
+          <Route path='/student/settings' element={<SSettings />}/>
         </Route>
 
         

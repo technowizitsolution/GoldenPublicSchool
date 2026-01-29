@@ -1,47 +1,53 @@
+import { useEffect, useState } from "react";
+import {useAuth} from '../../context/AuthContext';
+
 const Announcements = () => {
+  const {token,axios} = useAuth();
+  const [announcements, setAnnouncements] = useState([]);
+
+  const getAllAnnouncements = async () => {
+    try{
+      const response  = await axios.get('/admin/announcements',{headers:{token}});
+      console.log("Announcements fetched : ",response.data.announcements);
+      setAnnouncements(response.data.announcements);
+    }catch(error){
+      console.error("Error fetching announcements : ",error);
+    }
+  }
+
+  useEffect(()=>{
+    getAllAnnouncements();
+  },[]);
+
+  const colors = ["bg-lamaSkyLight", "bg-lamaPurpleLight", "bg-lamaYellowLight"];
+
   return (
     <div className="bg-white p-4 rounded-md">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Announcements</h1>
         <span className="text-xs text-gray-400">View All</span>
       </div>
-      <div className="flex flex-col gap-4 mt-4">
-        <div className="bg-lamaSkyLight rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-medium">Lorem ipsum dolor sit</h2>
-            <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-              2025-01-01
-            </span>
-          </div>
-          <p className="text-sm text-gray-400 mt-1">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum,
-            expedita. Rerum, quidem facilis?
-          </p>
-        </div>
-        <div className="bg-lamaPurpleLight rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-medium">Lorem ipsum dolor sit</h2>
-            <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-              2025-01-01
-            </span>
-          </div>
-          <p className="text-sm text-gray-400 mt-1">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum,
-            expedita. Rerum, quidem facilis?
-          </p>
-        </div>
-        <div className="bg-lamaYellowLight rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-medium">Lorem ipsum dolor sit</h2>
-            <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-              2025-01-01
-            </span>
-          </div>
-          <p className="text-sm text-gray-400 mt-1">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum,
-            expedita. Rerum, quidem facilis?
-          </p>
-        </div>
+      <div className="flex flex-col gap-4 mt-4 max-h-[245px] scrollbar-hidden overflow-y-auto">
+        {announcements.length > 0 ? (
+          announcements.map((announcement, index) => (
+            <div 
+              key={announcement._id} 
+              className={`${colors[index % colors.length]} rounded-md p-4 flex-shrink-0`}
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="font-medium">{announcement.title}</h2>
+                <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
+                  {new Date(announcement.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+              <p className="text-sm text-gray-400 mt-1">
+                {announcement.content.substring(0, 100)}...
+              </p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-400 text-center py-4">No announcements available</p>
+        )}
       </div>
     </div>
   );

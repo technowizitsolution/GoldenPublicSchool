@@ -4,6 +4,7 @@ import Fees from '../models/Fees.js';
 import Class from '../models/Class.js';
 import StudentUniform from '../models/StudentUniform.js';
 import StudentBook from '../models/StudentBook.js';
+import Announcement from '../models/Announcement.js';
 
 // Get all students
 export const getAllStudents = async (req, res) => {
@@ -316,5 +317,54 @@ export const getFeesByStudentId = async (req, res) => {
         });
     }
 }
+
+
+//controller for announcements 
+
+export const createAnnouncement = async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        const newAnnouncement = await Announcement.create({
+            title,
+            content
+        });
+        res.json({
+            success: true,
+            message: "Announcement created successfully",
+            announcement: newAnnouncement
+        });
+    } catch (err) {
+        console.error('Error creating announcement:', err);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error : error creating announcement",
+        });
+    }
+}
+
+
+export const deleteAnnouncement = async (req, res) => {
+    try {
+        const { announcementId } = req.params;
+        await Announcement.findByIdAndDelete(announcementId);
+        res.status(200).json({ message: 'Announcement deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting announcement:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }   
+}
+
+export const getAllAnnouncements = async (req, res) => {
+    try{
+        const announcements = await Announcement.find().sort({ createdAt: -1 });
+        res.status(200).json({ announcements });
+    }catch(error){
+        console.error('Error fetching announcements:',error);
+        res.status(500).json({message:'Internal server error'});
+    }
+}
+
+
+
 
 

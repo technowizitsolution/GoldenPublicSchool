@@ -3,6 +3,9 @@ import jwt from 'jsonwebtoken';
 import Fees from '../models/Fees.js';
 import StudentBook from '../models/StudentBook.js';
 import Book from '../models/Book.js';
+import UniformItem from '../models/UniformItem.js';
+import StudentUniform from '../models/StudentUniform.js';
+import Announcement from '../models/Announcement.js';
 
 //student login
 export const loginStudent = async (req, res) => {
@@ -142,4 +145,46 @@ export const getBooks = async (req, res) => {
         });
     }
 };
+
+// Get student's uniform items
+export const getStudentUniforms = async (req, res) => {
+    try {
+        const studentEmail = req.student; // Extracted from token in middleware
+        const student = await Student.findOne({ email: studentEmail });
+        if (!student) {
+            return res.json({ success: false, message: "Student not found" });
+        }
+
+        const studentUniforms = await StudentUniform.find({ student: student._id });
+        res.json({ success: true, studentUniforms });
+    }catch(error){
+        console.error("Error fetching student uniforms:", error);
+        res.json({ success: false, message: "Error fetching uniforms" });
+    }
+}
+
+// Get available uniform items for the student's class
+export const getAvailableUniformItems = async (req, res) => {
+    try {       
+        const uniformItems = await UniformItem.find();
+        res.json({ success: true, uniformItems });
+    } catch (error) {
+        console.error("Error fetching uniform items:", error);
+        res.json({ success: false, message: "Error fetching uniform items" });
+    }
+}
+
+//get All announcement 
+
+export const getAllAnnouncements = async (req, res) => {
+    try{
+        const announcements = await Announcement.find().sort({ createdAt: -1 });
+        res.status(200).json({ announcements });
+    }catch(error){
+        console.error('Error fetching announcements:',error);
+        res.status(500).json({message:'Internal server error'});
+    }
+}
+
+
 

@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllStudents , getStudentsByClassName , createStudent ,deleteStudent,getStudentById,getAllFeesRecords,getFeesByStudentId,recordPayment} from '../../controllers/adminStudentController.js';
+import { getAllStudents , getStudentsByClassName , createStudent ,deleteStudent,getStudentById,getAllFeesRecords,getFeesByStudentId,recordPayment,getAllAnnouncements,createAnnouncement,deleteAnnouncement} from '../../controllers/adminStudentController.js';
 import adminAuth from '../../middlewares/adminAuth.js'
 const adminStudentRouter = express.Router();
 import upload from '../../middlewares/multer.js'
@@ -20,5 +20,10 @@ adminStudentRouter.get('/feesRecords/:studentId',adminAuth,getFeesByStudentId);
 // PARAMETERIZED ROUTES LAST
 adminStudentRouter.delete('/student/:studentId',adminAuth,deleteStudent);
 adminStudentRouter.get('/student/:studentId',adminAuth, getStudentById);
+
+//Announcement Routes 
+adminStudentRouter.get('/announcements',adminAuth,getAllAnnouncements);
+adminStudentRouter.post('/announcement/create',adminAuth,createAnnouncement);
+adminStudentRouter.delete('/announcement/:announcementId',adminAuth,deleteAnnouncement);
 
 export default adminStudentRouter;

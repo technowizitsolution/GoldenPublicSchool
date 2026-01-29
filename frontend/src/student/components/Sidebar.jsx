@@ -43,12 +43,7 @@ const menuItems = [
                 icon: '/announcement.png',
                 visible: ["student"],
             },
-            {
-                label: "Messages",
-                path: "/student/messages",
-                icon: '/message.png',
-                visible: ["student"],
-            },
+            
         ],
     },
     {
