@@ -24,10 +24,6 @@ const Navbar = () => {
 
         {/* RIGHT - ICONS */}
         <div className="flex items-center gap-2 ml-2 sm:gap-3 md:gap-4 flex-shrink-0">
-          <div className="bg-white rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition">
-            <img src="/message.png" alt="Messages" width={20} height={20} className="w-5 h-5 sm:w-5 sm:h-5" />
-          </div>
-
           <div 
             onClick={() => setShowAnnouncements(true)}
             className="bg-white rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center cursor-pointer hover:bg-gray-100 transition relative"

@@ -1,90 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { Search, ChevronLeft, X, Filter } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/authContext/AuthContext';
 import {
   ClassCardShimmer,
   SummaryCardsShimmer,
   StudentTableShimmer,
   StudentCardsShimmer
 } from '../components/ShimmerLoader';
+import { useAdmin } from '../../context/adminContext/AdminContext';
 
 const Fees = () => {
   const [selectedClass, setSelectedClass] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [Classes, setClasses] = useState([]);
-  const [students, setStudents] = useState([]);
+  
   const [selectedClassData, setSelectedClassData] = useState([]);
-  const [feesData, setFeesData] = useState({});
   const [loading, setLoading] = useState(false);
-  const [classesLoading, setClassesLoading] = useState(false);
-  const [studentsLoading, setStudentsLoading] = useState(false);
-  const [feesLoading, setFeesLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const { token, axios } = useAuth();
+  
+  const { classes , students ,classesLoading , studentsLoading, feesData , feesLoading , getFeesData} = useAdmin();
 
-  const getAllStudents = async () => {
-    try {
-      setStudentsLoading(true);
-      const response = await axios.get('/admin/students');
-      if (response.status === 200) {
-        setStudents(response.data.students || response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching students:", error);
-    } finally {
-      setStudentsLoading(false);
-    }
-  };
-
-  const getAllClasses = async () => {
-    try {
-      setClassesLoading(true);
-      const response = await axios.get("/admin/classes");
-      if (response.status === 200) {
-        setClasses(response.data.classes || response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching classes:", error);
-    } finally {
-      setClassesLoading(false);
-    }
-  };
-
-  const getFeesData = async () => {
-    try {
-      setFeesLoading(true);
-      const response = await axios.get('/admin/student/feesRecords', { headers: { token } });
-      if (response.status === 200) {
-        const feesMap = {};
-        response.data.fees?.forEach(fee => {
-          feesMap[fee.student._id] = {
-            _id: fee._id,
-            totalFees: fee.totalFees,
-            paidAmount: fee.paidAmount,
-            remaining: fee.totalFees - fee.paidAmount,
-            status: fee.status,
-            dueDate: fee.dueDate,
-            paymentHistory: fee.paymentHistory
-          };
-        });
-        setFeesData(feesMap);
-      }
-    } catch (error) {
-      console.warn("Fees data endpoint not available, using defaults:", error.message);
-    } finally {
-      setFeesLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getAllClasses();
-    getAllStudents();
-    getFeesData();
-  }, []);
 
   function filteredClassStudents(classId) {
     const classStudents = students?.filter((student) => {
@@ -151,7 +90,7 @@ const Fees = () => {
     let overallCollected = 0;
     let overallTotal = 0;
 
-    Classes.forEach((classItem) => {
+    classes.forEach((classItem) => {
       const classStudents = students.filter(s => s.class?._id === classItem._id || s.class === classItem._id);
       const perStudentFee = classItem.fees.tuition + classItem.fees.admission + classItem.fees.exam + classItem.fees.transport;
       const classTotal = perStudentFee * classStudents.length;
@@ -183,7 +122,7 @@ const Fees = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
             <div className="bg-white p-4 sm:p-5 md:p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
               <p className="text-gray-600 text-xs sm:text-sm font-medium mb-2">Total Classes</p>
-              <p className="text-2xl sm:text-3xl font-bold text-gray-900">{Classes.length}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900">{classes.length}</p>
               <p className="text-gray-500 text-xs mt-2">In school</p>
             </div>
 
@@ -206,7 +145,7 @@ const Fees = () => {
           <ClassCardShimmer />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {Classes.map((classItem) => {
+            {classes.map((classItem) => {
               const classStudents = students.filter(s => s.class?._id === classItem._id || s.class === classItem._id);
               const perStudentFee = classItem.fees.tuition + classItem.fees.admission + classItem.fees.exam + classItem.fees.transport;
               const total = perStudentFee * classStudents.length;
@@ -305,7 +244,7 @@ const Fees = () => {
   }
 
   // STUDENT FEES VIEW
-  const classItem = Classes.find(c => c._id === selectedClass);
+  const classItem = classes.find(c => c._id === selectedClass);
 
   const enrichedStudentData = selectedClassData.map(student => {
     const perStudentFee = classItem.fees.tuition + classItem.fees.admission + classItem.fees.exam + classItem.fees.transport;

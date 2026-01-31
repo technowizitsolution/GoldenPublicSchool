@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import Table from "../components/Table";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/authContext/AuthContext";
+import { useAdmin } from "../../context/adminContext/AdminContext";
+
 import { 
   TableRowShimmer, 
   MobileCardShimmer, 
@@ -42,8 +44,9 @@ const columns = [
 ];
 
 const ClassListPage = () => {
-  const [classes, setClasses] = useState([]);
-  const [teachers, setTeachers] = useState([]);
+
+  const {classes , classesLoading , teachers , fetchClasses} = useAdmin();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
@@ -66,35 +69,6 @@ const ClassListPage = () => {
     status: "ACTIVE",
   });
 
-  useEffect(() => {
-    getAllClasses();
-    getAllTeachers();
-  }, []);
-
-  const getAllClasses = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get("/admin/classes");
-      if (response.status === 200) {
-        setClasses(response.data.classes || response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching classes:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getAllTeachers = async () => {
-    try {
-      const response = await axios.get("/admin/teachers");
-      if (response.status === 200) {
-        setTeachers(response.data.teachers || response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching teachers:", error);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -148,7 +122,7 @@ const ClassListPage = () => {
           status: "ACTIVE",
         });
         setIsModalOpen(false);
-        await getAllClasses();
+        await fetchClasses();
       }
     } catch (error) {
       console.error("Error creating class:", error);
@@ -171,7 +145,7 @@ const ClassListPage = () => {
       });
       if (response.status === 200) {
         alert("Class deleted successfully");
-        await getAllClasses();
+        await fetchClasses();
       }
     } catch (error) {
       console.error("Error deleting class:", error);
@@ -220,7 +194,7 @@ const ClassListPage = () => {
   return (
     <div className="bg-white rounded-md flex-1 m-2 sm:m-3 md:m-4 mt-0">
       {/* TOP */}
-      {loading ? (
+      {classesLoading ? (
         <ListHeaderShimmer />
       ) : (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">

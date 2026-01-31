@@ -13,7 +13,7 @@ const Admin = () => {
 
             <main className="flex-1 flex flex-col overflow-hidden bg-gray-100">
                 <Navbar />
-                <section className="flex-1 overflow-y-auto">
+                <section className="flex-1 overflow-y-auto lg:overflow-hidden scrollbar-hidden">
                     <Outlet />
                 </section>
             </main>

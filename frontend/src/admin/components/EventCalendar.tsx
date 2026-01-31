@@ -1,27 +1,5 @@
 import React, { useState } from "react";
 
-// TEMPORARY DATA
-const events = [
-  {
-    id: 1,
-    title: "Lorem ipsum dolor",
-    time: "12:00 PM - 2:00 PM",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  },
-  {
-    id: 2,
-    title: "Lorem ipsum dolor",
-    time: "12:00 PM - 2:00 PM",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  },
-  {
-    id: 3,
-    title: "Lorem ipsum dolor",
-    time: "12:00 PM - 2:00 PM",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  },
-];
-
 const EventCalendar = () => {
   const [date, setDate] = useState(new Date());
 
@@ -45,12 +23,10 @@ const EventCalendar = () => {
   const firstDay = getFirstDayOfMonth(date);
   const days = [];
 
-  // Empty cells for days before month starts
   for (let i = 0; i < firstDay; i++) {
     days.push(null);
   }
 
-  // Days of the month
   for (let i = 1; i <= daysInMonth; i++) {
     days.push(i);
   }
@@ -66,68 +42,37 @@ const EventCalendar = () => {
   const currentDay = isCurrentMonth ? today.getDate() : null;
 
   return (
-    <div className="bg-white p-4 rounded-md">
-      {/* CALENDAR */}
-      <div className="mb-4">
-        {/* Header with navigation */}
-        <div className="flex items-center justify-between mb-4 bg-[#EEF2FF] p-3 rounded-md">
-          <button onClick={handlePrevMonth} className="text-xl font-bold">&lt;</button>
-          <h2 className="text-lg font-bold">{monthNames[date.getMonth()]} {date.getFullYear()}</h2>
-          <button onClick={handleNextMonth} className="text-xl font-bold">&gt;</button>
-        </div>
-
-        {/* Day names */}
-        <div className="grid grid-cols-7 gap-2 mb-2">
-          {dayNames.map((day) => (
-            <div key={day} className="text-center font-bold text-sm text-gray-700">
-              {day}
-            </div>
-          ))}
-        </div>
-
-        {/* Calendar days */}
-        <div className="grid grid-cols-7 gap-2">
-          {days.map((day, index) => (
-            <div
-              key={index}
-              className={`text-center py-2 rounded-md text-sm font-medium ${
-                day === currentDay
-                  ? "bg-[#EEF2FF]"
-                  : day
-                  ? "text-gray-700 hover:bg-gray-100"
-                  : ""
-              }`}
-            >
-              {day}
-            </div>
-          ))}
-        </div>
+    <div className="bg-white p-2 xs:p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg border border-gray-200 shadow-sm h-full flex flex-col">
+      {/* Header with navigation */}
+      <div className="flex items-center justify-between mb-2 xs:mb-3 sm:mb-4 bg-blue-50 p-1.5 xs:p-2 sm:p-3 rounded-md">
+        <button onClick={handlePrevMonth} className="text-base xs:text-lg sm:text-xl font-bold text-gray-700 hover:bg-blue-100 px-1.5 xs:px-2 rounded">&lt;</button>
+        <h2 className="text-xs xs:text-sm sm:text-base md:text-lg font-bold text-gray-900 text-center flex-1 px-1">{monthNames[date.getMonth()]} {date.getFullYear()}</h2>
+        <button onClick={handleNextMonth} className="text-base xs:text-lg sm:text-xl font-bold text-gray-700 hover:bg-blue-100 px-1.5 xs:px-2 rounded">&gt;</button>
       </div>
 
-      {/* EVENTS */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold my-4">Events</h1>
-        <img
-          src="/moreDark.png"
-          alt="more"
-          className="w-5 h-5 object-contain cursor-pointer"
-        />
+      {/* Day names */}
+      <div className="grid grid-cols-7 gap-0.5 xs:gap-0.5 mb-1.5 xs:mb-2">
+        {dayNames.map((day) => (
+          <div key={day} className="text-center font-bold text-xs text-gray-700">
+            {day.substring(0, 1)}
+          </div>
+        ))}
       </div>
 
-      <div className="flex flex-col gap-4">
-        {events.map((event) => (
+      {/* Calendar days */}
+      <div className="grid grid-cols-7 gap-0.5 flex-1">
+        {days.map((day, index) => (
           <div
-            key={event.id}
-            className="p-5 rounded-md border-2 border-gray-100 border-t-4 
-            odd:border-t-lamaSky even:border-t-lamaPurple"
+            key={index}
+            className={`text-center py-1 xs:py-1.5 rounded text-xs xs:text-sm font-medium aspect-square flex items-center justify-center ${
+              day === currentDay
+                ? "bg-blue-200 text-blue-900 font-bold"
+                : day
+                ? "text-gray-700 hover:bg-gray-100 cursor-pointer"
+                : ""
+            }`}
           >
-            <div className="flex items-center justify-between">
-              <h1 className="font-semibold text-gray-600">{event.title}</h1>
-              <span className="text-gray-300 text-xs">{event.time}</span>
-            </div>
-            <p className="mt-2 text-gray-400 text-sm">
-              {event.description}
-            </p>
+            {day}
           </div>
         ))}
       </div>

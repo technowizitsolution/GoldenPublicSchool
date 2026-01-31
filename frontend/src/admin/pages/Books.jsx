@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronLeft, Loader ,ArrowRight} from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/authContext/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Books = () => {

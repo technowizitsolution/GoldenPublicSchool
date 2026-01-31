@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/authContext/AuthContext";
 
 const SFees = () => {
   const [feesData, setFeesData] = useState(null);

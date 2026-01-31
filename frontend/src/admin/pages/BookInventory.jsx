@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit2, Trash2, Loader, AlertCircle, ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/authContext/AuthContext';
 
 const BookInventory = () => {
     const { token, axios } = useAuth();

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Table from "../components/Table";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/authContext/AuthContext";
 import { X, Filter, Plus } from "lucide-react";
-import {TableRowShimmer,MobileCardShimmer,ListHeaderShimmer} from '../components/Shimmer';
+import {TableRowShimmer,MobileCardShimmer} from '../components/Shimmer';
+import { useAdmin } from "../../context/adminContext/AdminContext";
 
 const columns = [
     {
@@ -37,13 +38,13 @@ const columns = [
 ];
 
 const StudentListPage = () => {
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [classes, setClasses] = useState([]);
-    const [students, setStudents] = useState([]);
+    const {students ,studentsLoading,classes} = useAdmin();
     const { token, axios } = useAuth();
-    const [loading, setLoading] = useState(false);
+
 
     const [formData, setFormData] = useState({
         username: "",
@@ -146,36 +147,6 @@ const StudentListPage = () => {
         }
     };
 
-    const getAllClasses = async () => {
-        try {
-            const response = await axios.get("/admin/classes");
-            if (response.status === 200) {
-                setClasses(response.data.classes || response.data);
-            }
-        } catch (error) {
-            console.error("Error fetching classes:", error);
-        }
-    };
-
-    useEffect(() => {
-        getAllStudents();
-        getAllClasses();
-    }, []);
-
-    const getAllStudents = async () => {
-        try {
-            setLoading(true);
-            console.log("Fetching students...",students);
-            const response = await axios.get('/admin/students');
-            if (response.status === 200) {
-                setStudents(response.data.students);
-                setLoading(false);
-            }
-            console.log("students: ",response.data.students);
-        } catch (error) {
-            console.error("Error fetching students:", error);
-        }
-    }
 
     const handleDeleteStudent = async (studentId) => {
         if (!window.confirm("Are you sure you want to delete this student?")) {
@@ -294,7 +265,7 @@ const StudentListPage = () => {
 
             {/* Mobile Card View */}
             {
-             loading ? <MobileCardShimmer cards={4} /> 
+             studentsLoading ? <MobileCardShimmer cards={4} /> 
               :(<div className="md:hidden p-2 sm:p-3 space-y-3">
                 {filteredStudents.length > 0 ? (
                     filteredStudents.map((student) => (
@@ -346,7 +317,7 @@ const StudentListPage = () => {
             }
 
             {/* Desktop Table View */}
-            {loading ? <TableRowShimmer rows={5} columns={6} /> :(
+            {studentsLoading ? <TableRowShimmer rows={5} columns={6} /> :(
             <div className="hidden md:block">
                 <Table
                     columns={columns}

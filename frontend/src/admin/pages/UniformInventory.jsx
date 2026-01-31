@@ -1,7 +1,7 @@
 // frontend/src/admin/pages/UniformInventory.jsx
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit2, Trash2, Loader, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/authContext/AuthContext';
 
 const UniformInventory = () => {
     const { token, axios } = useAuth();

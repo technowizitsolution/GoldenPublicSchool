@@ -1,30 +1,14 @@
 import React, { useState, useEffect } from "react";
 import AnnouncementForm from "./AnnouncementForm";
 import AnnouncementsList from "./AnnouncementsList";
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/authContext/AuthContext';
+import { useAdmin } from "../../context/adminContext/AdminContext";
 
 const AnnouncementsModal = ({ onClose }) => {
     const [showForm, setShowForm] = useState(false);
-    const [loading, setLoading] = useState(true);
     const { token, axios } = useAuth();
-    const [announcements, setAnnouncements] = useState([]);
-
-    const getAllAnnouncements = async () => {
-        try {
-            setLoading(true);
-            const response = await axios.get('/admin/announcements', { headers: { token } });
-            console.log("Announcements fetched : ", response.data.announcements);
-            setAnnouncements(response.data.announcements);
-        } catch (error) {
-            console.error("Error fetching announcements : ", error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        getAllAnnouncements();
-    }, []);
+    const {announcements,setAnnouncements,announcementsLoading} = useAdmin();
+    
 
     const handleAddAnnouncement = async (newAnnouncement) => {
         try {
@@ -66,7 +50,7 @@ const AnnouncementsModal = ({ onClose }) => {
 
                 {/* Content */}
                 <div className="flex-1 scrollbar-hidden overflow-y-auto p-3 sm:p-4 md:p-6">
-                    {loading ? (
+                    {announcementsLoading ? (
                         <div className="flex justify-center items-center h-40">
                             <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-blue-500"></div>
                         </div>

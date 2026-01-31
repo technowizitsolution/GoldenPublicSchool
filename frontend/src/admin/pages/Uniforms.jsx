@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronLeft, AlertCircle, Loader, Filter, X, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/authContext/AuthContext';
 import {
   ClassCardShimmer,
 } from '../components/ShimmerLoader';

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Pagination from "../components/Pagination";
 import Table from "../components/Table";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/authContext/AuthContext";
+import {useAdmin} from "../../context/adminContext/AdminContext";
 import { 
   TableRowShimmer, 
   MobileCardShimmer, 
-  ModalFormShimmer,
   ListHeaderShimmer 
 } from "../components/Shimmer";
 import { X, Filter, Plus } from "lucide-react";
@@ -32,7 +31,8 @@ const columns = [
 ];
 
 const TeacherListPage = () => {
-  const [teachers, setTeachers] = useState([]);
+  const {teachers , teachersLoading , fetchTeachers} = useAdmin();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
@@ -51,24 +51,6 @@ const TeacherListPage = () => {
     joiningDate: "",
   });
 
-  useEffect(() => {
-    getAllTeachers();
-  }, []);
-
-  const getAllTeachers = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get("/admin/teachers");
-      if (response.status === 200) {
-        setTeachers(response.data.teachers || response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching teachers:", error);
-      alert("Failed to load teachers");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,7 +90,7 @@ const TeacherListPage = () => {
         });
 
         setIsModalOpen(false);
-        await getAllTeachers();
+        await fetchTeachers();
       }
     } catch (error) {
       console.error("Error creating teacher:", error);
@@ -175,7 +157,7 @@ const TeacherListPage = () => {
   return (
     <div className="bg-white rounded-lg m-2 sm:m-3 md:m-4">
       {/* TOP */}
-      {loading ? (
+      {teachersLoading ? (
         <ListHeaderShimmer />
       ) : (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
@@ -193,7 +175,7 @@ const TeacherListPage = () => {
       )}
 
       {/* Mobile Card View */}
-      {loading ? (
+      {teachersLoading ? (
         <MobileCardShimmer cards={4} />
       ) : (
         <div className="md:hidden p-2 sm:p-3 space-y-3">
@@ -240,7 +222,7 @@ const TeacherListPage = () => {
       )}
 
       {/* Desktop Table View */}
-      {loading ? (
+      {teachersLoading ? (
         <TableRowShimmer rows={5} columns={5} />
       ) : (
         <div className="hidden md:block">
