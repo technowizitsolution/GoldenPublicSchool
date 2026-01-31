@@ -40,7 +40,6 @@ export const AdminProvider = ({ children }) => {
       const response = await axios.get('/admin/announcements', { 
         headers: { token } 
       });
-      console.log("Fetched announcements:", response);
       setAnnouncements(response.data.announcements || []);
     } catch (error) {
       console.error('Error fetching announcements:', error);
@@ -57,7 +56,6 @@ export const AdminProvider = ({ children }) => {
       const response = await axios.get('/admin/students', { 
         headers: { token } 
       });
-      console.log("Fetched students:", response);
       setStudents(response.data.students || []);
     } catch (error) {
       console.error('Error fetching students:', error);
@@ -73,7 +71,6 @@ export const AdminProvider = ({ children }) => {
       const response = await axios.get('/admin/teachers', { 
         headers: { token } 
       });
-      console.log("Fetched teachers:", response);
       setTeachers(response.data.teachers || []);
     } catch (error) {
       console.error('Error fetching teachers:', error);
@@ -89,7 +86,6 @@ export const AdminProvider = ({ children }) => {
       const response = await axios.get('/admin/classes', { 
         headers: { token } 
       });
-        console.log("Fetched classes:", response);
       setClasses(response.data.classes || []);
     } catch (error) {
       console.error('Error fetching classes:', error);
@@ -102,7 +98,6 @@ export const AdminProvider = ({ children }) => {
     try {
       setFeesLoading(true);
       const response = await axios.get('/admin/student/feesRecords', { headers: { token } });
-      console.log("Fetched fees data:", response);
       if (response.status === 200) {
         const feesMap = {};
         response.data.fees?.forEach(fee => {

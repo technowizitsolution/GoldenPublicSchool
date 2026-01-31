@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import StudentContext from './StudentContext';
 import { useAuth } from '../authContext/AuthContext';
 
@@ -18,16 +18,16 @@ export const StudentProvider = ({ children }) => {
   const [classesLoading, setClassesLoading] = useState(false);
 
   // Fees
-  const [studentFees, setStudentFees] = useState([]);
+  const [feesData, setFeesData] = useState([]);
+  const [paymentHistory, setPaymentHistory] = useState([]);
   const [feesLoading, setFeesLoading] = useState(false);
 
   // Books
-  const [studentBooks, setStudentBooks] = useState([]);
-  const [booksLoading, setBooksLoading] = useState(false);
+  const [issuedBooks, setIssuedBooks] = useState([]);
+
 
   // Uniforms
   const [studentUniforms, setStudentUniforms] = useState([]);
-  const [uniformsLoading, setUniformsLoading] = useState(false);
 
   // Profile Methods
   const fetchStudentProfile = useCallback(async () => {
@@ -36,6 +36,7 @@ export const StudentProvider = ({ children }) => {
       const response = await axios.get('/student/profile', { 
         headers: { token } 
       });
+      console.log("Fetched student profile:", response.data.student);
       setStudentProfile(response.data.student);
     } catch (error) {
       console.error('Error fetching student profile:', error);
@@ -51,6 +52,7 @@ export const StudentProvider = ({ children }) => {
       const response = await axios.get('/student/announcements', { 
         headers: { token } 
       });
+      console.log("Fetched announcements:", response);
       setAnnouncements(response.data.announcements || []);
     } catch (error) {
       console.error('Error fetching announcements:', error);
@@ -59,65 +61,68 @@ export const StudentProvider = ({ children }) => {
     }
   }, [axios, token]);
 
-  // Classes Methods
-  const fetchStudentClasses = useCallback(async () => {
-    try {
-      setClassesLoading(true);
-      const response = await axios.get('/student/classes', { 
-        headers: { token } 
-      });
-      setStudentClasses(response.data.classes || []);
-    } catch (error) {
-      console.error('Error fetching student classes:', error);
-    } finally {
-      setClassesLoading(false);
-    }
-  }, [axios, token]);
+  
 
   // Fees Methods
-  const fetchStudentFees = useCallback(async () => {
+  const fetchFeesData = useCallback(async () => {
     try {
       setFeesLoading(true);
-      const response = await axios.get('/student/fees', { 
-        headers: { token } 
+      const response = await axios.get("/student/fees", {
+        headers: {
+          token
+        },
       });
-      setStudentFees(response.data.fees || []);
+
+      console.log("Fees Response:", response.data.fees[0]);
+
+      if (response.data.success) {
+        setFeesData(response.data.fees[0]);
+        setPaymentHistory(response.data.fees[0].paymentHistory || []);
+        console.log("Fees history:", response.data.fees[0].paymentHistory || []);
+      } else {
+        console.error("Failed to fetch fees data");
+      }
     } catch (error) {
-      console.error('Error fetching student fees:', error);
+      console.error("Error fetching fees data:", error);
     } finally {
       setFeesLoading(false);
     }
-  }, [axios, token]);
+  },[axios, token]);
 
   // Books Methods
   const fetchStudentBooks = useCallback(async () => {
     try {
-      setBooksLoading(true);
-      const response = await axios.get('/student/books', { 
+      const response = await axios.get('/student/issuedBooks', { 
         headers: { token } 
       });
-      setStudentBooks(response.data.books || []);
+      console.log("Fetched student books:", response);
+      setIssuedBooks(response.data.data || []);
     } catch (error) {
       console.error('Error fetching student books:', error);
-    } finally {
-      setBooksLoading(false);
-    }
+    } 
   }, [axios, token]);
 
   // Uniforms Methods
   const fetchStudentUniforms = useCallback(async () => {
     try {
-      setUniformsLoading(true);
-      const response = await axios.get('/student/uniforms', { 
+      
+      const response = await axios.get('/student/studentUniforms', { 
         headers: { token } 
       });
-      setStudentUniforms(response.data.uniforms || []);
+      console.log("Fetched student uniforms:", response);
+      setStudentUniforms(response.data.studentUniforms[0].uniforms || []);
     } catch (error) {
       console.error('Error fetching student uniforms:', error);
-    } finally {
-      setUniformsLoading(false);
-    }
+    } 
   }, [axios, token]);
+
+  useEffect(() => {
+    fetchAnnouncements();
+    fetchStudentProfile();
+    fetchFeesData();
+    fetchStudentBooks();
+    fetchStudentUniforms();
+  },[]);
 
   const value = {
     // Profile
@@ -133,21 +138,20 @@ export const StudentProvider = ({ children }) => {
     // Classes
     studentClasses,
     classesLoading,
-    fetchStudentClasses,
+    
 
     // Fees
-    studentFees,
+    feesData,
     feesLoading,
-    fetchStudentFees,
+    paymentHistory,
+    fetchFeesData,
 
     // Books
-    studentBooks,
-    booksLoading,
+    issuedBooks,
     fetchStudentBooks,
 
     // Uniforms
     studentUniforms,
-    uniformsLoading,
     fetchStudentUniforms,
   };
 

@@ -1,32 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../context/authContext/AuthContext'
+import { useStudent } from '../../context/studentContext/StudentContext';
 
 const SBooks = () => {
-  const [issuedBooks, setIssuedBooks] = useState([]);
   const [catalogBooks, setCatalogBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('assigned');
   const { token, axios } = useAuth();
+  const { issuedBooks } = useStudent();
 
-  const getIssuedBooks = async () => {
-    try {
-      const response = await axios.get('/student/issuedBooks', {
-        headers: {
-         token
-        }
-      });
-
-      if (response.data.success) {
-        setIssuedBooks(response.data.data);
-      } else {
-        setError(response.data.message || "Failed to fetch assigned books");
-      }
-    } catch (error) {
-      console.error("Error fetching assigned books:", error);
-      setError(error.response?.data?.message || "Error fetching assigned books");
-    }
-  };
 
   const getCatalogBooks = async () => {
     try {
@@ -51,7 +34,6 @@ const SBooks = () => {
 
   useEffect(() => {
     setLoading(true);
-    getIssuedBooks();
     getCatalogBooks();
   }, []);
 

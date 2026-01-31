@@ -1,46 +1,17 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/authContext/AuthContext";
+import { useStudent } from "../../context/studentContext/StudentContext";
 
 const SFees = () => {
-  const [feesData, setFeesData] = useState(null);
-  const [paymentHistory, setPaymentHistory] = useState([]);
+
+  const {feesData,feesLoading,paymentHistory } = useStudent();
+ 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { token, axios } = useAuth();
 
-  const getFeesData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await axios.get("/student/fees", {
-        headers: {
-          token
-        },
-      });
+  
 
-      console.log("Fees Response:", response.data.fees[0]);
-
-      if (response.data.success) {
-        setFeesData(response.data.fees[0]);
-        setPaymentHistory(response.data.fees[0].paymentHistory || []);
-        console.log("Fees history:", response.data.fees[0].paymentHistory || []);
-      } else {
-        setError(response.data.message || "Failed to fetch fees data");
-      }
-    } catch (error) {
-      console.error("Error fetching fees data:", error);
-      setError(error.response?.data?.message || "Error fetching fees data");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getFeesData();
-  }, []);
-
-  if (loading) {
+  if (feesLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
         <div className="text-center">

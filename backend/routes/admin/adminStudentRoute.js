@@ -5,7 +5,7 @@ const adminStudentRouter = express.Router();
 import upload from '../../middlewares/multer.js'
 
 // Route to get all students
-adminStudentRouter.get('/students',getAllStudents);
+adminStudentRouter.get('/students',adminAuth,getAllStudents);
 
 //Route to get students by class name
 adminStudentRouter.get('/students/by-class/:className',adminAuth,getStudentsByClassName);

@@ -4,7 +4,7 @@ import adminAuth from '../../middlewares/adminAuth.js';
 const adminTeacherRouter = express.Router();
 
 //Route to get all teachers
-adminTeacherRouter.get('/teachers',getAllTeachers);
+adminTeacherRouter.get('/teachers',adminAuth,getAllTeachers);
 
 //Route to create a new Teacher
 adminTeacherRouter.post('/teacher/create',adminAuth,createTeacher);

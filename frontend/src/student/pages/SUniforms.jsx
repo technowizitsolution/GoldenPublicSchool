@@ -1,25 +1,15 @@
 import { useState, useEffect } from "react"
 import { useAuth } from '../../context/authContext/AuthContext';
+import { useStudent } from "../../context/studentContext/StudentContext";
 
 const SUniforms = () => {
-  const [studentUniforms, setStudentUniforms] = useState([]);
   const [uniformItems, setUniformItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('issued');
   const { token, axios } = useAuth();
+  const {studentUniforms} = useStudent();
 
-  const getStudentUniforms = async () => {
-    try {
-      const response = await axios.get('/student/studentUniforms', { headers: { token } });
-      if (response.data.success) {
-        setStudentUniforms(response.data.studentUniforms[0].uniforms);
-      }
-    } catch (err) {
-      console.error("Error fetching student uniforms:", err);
-      setError(err.response?.data?.message || "Error fetching uniforms");
-    }
-  };
 
   const getUniformItems = async () => {
     try {
@@ -35,7 +25,7 @@ const SUniforms = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      await Promise.all([getStudentUniforms(), getUniformItems()]);
+      await Promise.all([getUniformItems()]);
       setLoading(false);
     };
     fetchData();

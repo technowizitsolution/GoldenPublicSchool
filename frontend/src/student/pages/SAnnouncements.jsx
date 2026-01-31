@@ -1,27 +1,6 @@
-import { useState, useEffect } from "react"
-import { useAuth } from '../../context/authContext/AuthContext';
-
+import { useStudent } from "../../context/studentContext/StudentContext";
 const SAnnouncements = () => {
-  const { axios, token } = useAuth();
-  const [announcements, setAnnouncements] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const getAllAnnouncements = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('/student/announcements', { headers: { token } });
-      console.log("Announcements fetched : ", response.data.announcements);
-      setAnnouncements(response.data.announcements);
-    } catch (error) {
-      console.error('Error fetching announcements:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    getAllAnnouncements();
-  }, [])
+  const {announcements , announcementsLoading} = useStudent();
 
   const colors = [
     "border-blue-500",
@@ -53,14 +32,14 @@ const SAnnouncements = () => {
       </div>
 
       {/* Loading State */}
-      {loading && (
+      {announcementsLoading && (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-b-2 border-blue-500"></div>
         </div>
       )}
 
       {/* Announcements List */}
-      {!loading && announcements.length > 0 ? (
+      {!announcementsLoading && announcements.length > 0 ? (
         <div className="space-y-3 sm:space-y-4">
           {announcements.map((announcement, index) => (
             <div
@@ -84,7 +63,7 @@ const SAnnouncements = () => {
           ))}
         </div>
       ) : (
-        !loading && (
+        !announcementsLoading && (
           <div className="text-center py-8 sm:py-12">
             <p className="text-sm sm:text-base md:text-lg text-gray-500">
               No announcements available

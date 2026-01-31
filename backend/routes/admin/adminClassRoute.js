@@ -10,7 +10,7 @@ import adminAuth from "../../middlewares/adminAuth.js";
 const adminClassRouter = express.Router();
 
 // Route to get all classes
-adminClassRouter.get("/classes", getAllClasses);
+adminClassRouter.get("/classes", adminAuth,getAllClasses);
 
 // Route to create a new class
 adminClassRouter.post("/class/create", adminAuth, createClass);
